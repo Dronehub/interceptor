@@ -40,7 +40,15 @@ class Configuration:
                 arguments[arguments.index(arg_to_replace)] = arg_to_replace_with
 
         if self.remove_non_ascii:
-            arguments = [arg.replace('‘', '').replace('’', '') for arg in arguments]
+            new_args = []
+
+            for arg in arguments:
+                new_arg = []
+                for c in arg:
+                    if ord(c) <= 128:
+                        new_arg.append(c)
+                new_args.append(''.join(new_arg))
+            arguments = new_args
 
         if self.display_before_start:
             print('%s %s' % (process, ' '.join(arguments)))
