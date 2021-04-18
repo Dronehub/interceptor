@@ -16,11 +16,9 @@ logging.basicConfig(level=logging.DEBUG)
 # and modified to better suit UNIX platforms
 def whereis(app: str) -> tp.List[str]:
     result = None
-    print('Gunning for %s' % (repr(app), ))
     try:
         args = ['whereis', app]
-        print(args)
-        result = call_and_return_stdout(args, shell=True,
+        result = call_and_return_stdout(args,
                                         expected_return_code=0,
                                         encoding='utf-8')
     except ProcessFailed:
