@@ -1,6 +1,7 @@
 import os, subprocess
 import sys
 from subprocess import CalledProcessError
+import typing as tp
 
 # unceremoniously taken from https://codereview.stackexchange.com/questions/190886/platform-independent-whereis-function
 # and modified to better suit UNIX platforms
@@ -8,7 +9,7 @@ def whereis(app: str) -> tp.List[str]:
     try:
         result = subprocess.check_output("whereis {}".format(app))
 
-    except CalledProcessError as err:
+    except CalledProcessError:
         print('whereis not found, aborting')
         sys.exit(1)
 
