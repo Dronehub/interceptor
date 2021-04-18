@@ -21,4 +21,5 @@ def run():
     shutil.copy(source, source+'-intercepted')
     os.unlink(source)
     shutil.copy(source_file, source)
+    os.chmod(source, 0o555)
     print('Successfully intercepted %s' % (tool_name, ))
