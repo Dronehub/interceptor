@@ -1,6 +1,7 @@
 from setuptools import setup
 
 setup(
+    name='interceptor',
     version='0.9',
     author='Piotr Maślanka',
     install_requires=['satella'],
