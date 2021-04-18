@@ -35,6 +35,8 @@ class Configuration:
             if arg_to_replace in arguments:
                 arguments[arguments.index(arg_to_replace)] = arg_to_replace_with
 
+        process = process + '-intercepted'
+
         return [process, *args]
 
     def to_json(self):

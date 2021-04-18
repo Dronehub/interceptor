@@ -34,11 +34,12 @@ def whereis(app: str) -> tp.List[str]:
             line = line.strip()
             if not line:
                 continue
+
             if ':' in line:
-                results.append(line.split(':', 1)[1])
+                results.append(line.split(':', 1)[1].strip())
             else:
                 results.append(line)
-        return result
+        return results
 
 
 def filter_whereis(app: str) -> str:
