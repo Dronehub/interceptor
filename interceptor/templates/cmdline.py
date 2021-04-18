@@ -4,7 +4,6 @@ import os
 import sys
 
 if __name__ == '__main__':
-    print(sys.argv)
     tool_name = sys.argv[0].split('/')[-1]
     cfg = load_config_for(tool_name)
     args = cfg.modify(sys.argv)

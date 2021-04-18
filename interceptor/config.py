@@ -21,7 +21,7 @@ class Configuration:
         process, *arguments = args
         for arg_to_take_away in self.args_to_take_away:
             if arg_to_take_away in arguments:
-                del arguments[args.index(arg_to_take_away)]
+                del arguments[arguments.index(arg_to_take_away)]
 
         for arg_to_append in self.args_to_append:
             if arg_to_append not in arguments:
@@ -37,7 +37,7 @@ class Configuration:
 
         process = process + '-intercepted'
 
-        return [process, *args]
+        return [process, *arguments]
 
     def to_json(self):
         return {'args_to_take_away': self.args_to_take_away,
