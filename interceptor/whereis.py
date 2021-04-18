@@ -7,7 +7,7 @@ import typing as tp
 # and modified to better suit UNIX platforms
 def whereis(app: str) -> tp.List[str]:
     try:
-        result = subprocess.check_output("whereis {}".format(app))
+        result = subprocess.check_output(["whereis", app])
 
     except CalledProcessError:
         print('whereis not found, aborting')
