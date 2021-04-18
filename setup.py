@@ -2,10 +2,11 @@ from setuptools import setup
 
 setup(
     name='interceptor',
-    version='1.0a1',
+    version='1.0',
     author='Piotr Maślanka',
     install_requires=['satella'],
-    package_data={'interceptor': ['templates/cmdline.py']},
+    package_data={'interceptor': ['templates/cmdline.py',
+                                  'templates/config']},
     packages=[
         'interceptor',
     ],

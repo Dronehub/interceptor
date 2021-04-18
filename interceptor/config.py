@@ -10,11 +10,15 @@ class Configuration:
     def __init__(self, args_to_take_away: tp.Optional[tp.List[str]] = None,
                  args_to_append: tp.Optional[tp.List[str]] = None,
                  args_to_append_before: tp.Optional[tp.List[str]] = None,
-                 args_to_replace: tp.Optional[tp.List[tp.Tuple[str, str]]] = None):
+                 args_to_replace: tp.Optional[tp.List[tp.Tuple[str, str]]] = None,
+                 remove_non_ascii: bool = False,
+                 display_before_start: bool = False):
         self.args_to_take_away = args_to_take_away or []
-        self.args_to_append= args_to_append or []
+        self.args_to_append = args_to_append or []
         self.args_to_append_before = args_to_append_before or []
         self.args_to_replace = args_to_replace or []
+        self.remove_non_ascii = remove_non_ascii
+        self.display_before_start = display_before_start
 
     @for_argument(None, copy.copy)
     def modify(self, args):
@@ -35,7 +39,11 @@ class Configuration:
             if arg_to_replace in arguments:
                 arguments[arguments.index(arg_to_replace)] = arg_to_replace_with
 
-        process = process + '-intercepted'
+        if self.remove_non_ascii:
+            arguments = [arg.replace('‘', '').replace('’', '') for arg in arguments]
+
+        if self.display_before_start:
+            print('%s %s' % (process, ' '.join(arguments)))
 
         return [process, *arguments]
 
@@ -43,14 +51,18 @@ class Configuration:
         return {'args_to_take_away': self.args_to_take_away,
                 'args_to_append': self.args_to_append,
                 'args_to_append_before': self.args_to_append_before,
-                'args_to_replace': self.args_to_replace}
+                'args_to_replace': self.args_to_replace,
+                'remove_non_ascii': self.remove_non_ascii,
+                'display_before_start': self.display_before_start}
 
     @classmethod
     def from_json(cls, dct):
         return Configuration(dct.get('args_to_take_away'),
                              dct.get('args_to_append'),
                              dct.get('args_to_append_before'),
-                             dct.get('args_to_replace'))
+                             dct.get('args_to_replace'),
+                             dct.get('remove_non_ascii', False),
+                             dct.get('display_before_start', False))
 
 
 def load_config_for(name: str) -> Configuration:

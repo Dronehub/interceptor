@@ -1,1 +1,1 @@
-interceptor/templates/cmdline.py text eol=lf
+interceptor/templates/* text eol=lf

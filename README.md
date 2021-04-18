@@ -34,7 +34,8 @@ with the following contents:
   "args_to_take_away": ["-quiet"],
   "args_to_append": ["-DDEBUG"]],
   "args_to_append_before": ["-v"],
-  "args_to_replace": [["-march=native", "-mcpu=native"]]
+  "args_to_replace": [["-march=native", "-mcpu=native"]],
+  "remove_non_ascii": true
 }
 ```
 
@@ -54,9 +55,15 @@ the first item occurs in arguments, it will be replaced by the second item.
 
 If you don't prepare the configuration file in advance, an empty file will be created for you.
      
-### Launch interceptor
+If `remove_non_ascii` is set, all non-ASCII characters from arguments will be removed.
+     
+### The intercept command
 
-And then invoke
+The `intercept` command is the basic command used to interface with interceptor.
+
+#### Intercepting tools
+
+Say, to intercept g++ invoke:
 
 ```bash
 intercept g++

@@ -4,7 +4,6 @@ import os
 import sys
 
 if __name__ == '__main__':
-    tool_name = sys.argv[0].split('/')[-1]
-    cfg = load_config_for(tool_name)
+    cfg = load_config_for('{TOOLNAME}')
     args = cfg.modify(sys.argv)
-    os.execv(args[0], args)
+    os.execv('{LOCATION}', args)
