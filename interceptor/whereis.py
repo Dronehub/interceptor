@@ -36,9 +36,7 @@ def whereis(app: str) -> tp.List[str]:
                 continue
 
             if ':' in line:
-                results.append(line.split(':', 1)[1].strip())
-            else:
-                results.append(line)
+                results = line.split(':', 1)[1].strip().split(' ')
         return results
 
 
