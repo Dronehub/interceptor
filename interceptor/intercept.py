@@ -19,6 +19,9 @@ def intercept(tool_name: str) -> None:
                     os.path.join('/etc/interceptor.d', tool_name))
     source = filter_whereis(sys.argv[1])
     target_intercepted = source+'-intercepted'
+    if os.path.exists(target_intercepted):
+        print('Target already intercepted. Aborting.')
+        sys.exit(1)
     shutil.copy(source, target_intercepted)
     os.unlink(source)
     source_content = read_in_file(source_file, 'utf-8')
