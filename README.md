@@ -35,7 +35,7 @@ with the following contents:
   "args_to_append": ["-DDEBUG"]],
   "args_to_append_before": ["-v"],
   "args_to_replace": [["-march=native", "-mcpu=native"]],
-  "remove_non_ascii": true
+  "display_before_start": true
 }
 ```
 
@@ -55,7 +55,8 @@ the first item occurs in arguments, it will be replaced by the second item.
 
 If you don't prepare the configuration file in advance, an empty file will be created for you.
      
-If `remove_non_ascii` is set, all non-ASCII characters from arguments will be removed.
+If `display_before_start` is set, then before the launch
+the application name and parameters actually passed to it will be displayed on stdout.
      
 ### The intercept command
 
@@ -63,18 +64,20 @@ The `intercept` command is the basic command used to interface with interceptor.
 
 #### Intercepting tools
 
-Say, to intercept g++ invoke:
+Say, to intercept the command `foo` invoke:
 
 ```bash
-intercept g++
+intercept foo
 ```
 
 Interceptor should display the following:
 
 ```
-Successfully intercepted g++
+Successfully intercepted foo
 ```
 
 A Python wrapper will be found at previous location of 
-g++, while it itself will be copied to the same directory
-but named `g++-intercepted`.
+foo, while it itself will be copied to the same directory
+but named `foo-intercepted`.
+The wrapper will hold the name of `foo` inside, 
+so you can symlink it safely (eg. symlink of g++ to c++).

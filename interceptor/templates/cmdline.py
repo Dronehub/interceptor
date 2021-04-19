@@ -5,5 +5,5 @@ import sys
 
 if __name__ == '__main__':
     cfg = load_config_for('{TOOLNAME}')
-    args = cfg.modify(sys.argv)
+    args = cfg.modify(sys.argv, '{TOOLNAME}')
     os.execv('{LOCATION}', args)
