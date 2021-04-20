@@ -35,6 +35,12 @@ def intercept(tool_name: str) -> None:
     print('Successfully intercepted %s' % (tool_name, ))
 
 
+def is_intercepted(app_name: str) -> bool:
+    path = filter_whereis(app_name)
+    return os.path.exists(path) and os.path.exists(path+INTERCEPTED) \
+           and os.path.exists(os.path.join('/etc/interceptor.d', app_name))
+
+
 def unintercept(app_name: str) -> None:
     source = filter_whereis(app_name + INTERCEPTED)
     src_name = source[:-len(INTERCEPTED)]
@@ -55,6 +61,11 @@ def run():
     if len(sys.argv) == 3:
         if sys.argv[1] == 'undo':
             unintercept(sys.argv[2])
+        elif sys.argv[1] == 'status':
+            if is_intercepted(sys.argv[2]):
+                print('%s is intercepted' % (sys.argv[2], ))
+            else:
+                print('%s is NOT intercepted' % (sys.argv[2], ))
         else:
             print('''Unrecognized command. Usage:
 * intercept foo - intercept foo

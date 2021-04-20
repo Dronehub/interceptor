@@ -5,3 +5,4 @@ This is only for new-version changes:
 # v1.1
 
 * added the `undo` command
+* added the `status` command

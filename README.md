@@ -87,3 +87,9 @@ To cancel intercepting `foo` type:
 ```bash
 intercept undo foo
 ```
+
+To check whether `foo` is being intercepted type:
+
+```bash
+intercept status foo
+```
