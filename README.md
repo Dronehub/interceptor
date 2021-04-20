@@ -81,3 +81,9 @@ foo, while it itself will be copied to the same directory
 but named `foo-intercepted`.
 The wrapper will hold the name of `foo` inside, 
 so you can symlink it safely (eg. symlink of g++ to c++).
+
+To cancel intercepting `foo` type:
+
+```bash
+intercept undo foo
+```

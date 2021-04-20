@@ -33,6 +33,16 @@ def intercept(tool_name: str) -> None:
     print('Successfully intercepted %s' % (tool_name, ))
 
 
+def unintercept(app_name: str) -> None:
+    f_name = app_name + '-intercepted'
+    source = filter_whereis(f_name)
+    src_name = source[:-len('-intercepted')]
+    os.unlink(src_name)
+    shutil.copy(source, src_name)
+    print('Successfully unintercepted %s' % (app_name, ))
+    print('Leaving the configuration in place')
+
+
 def run():
 
     if not os.path.exists('/etc/interceptor.d'):
@@ -41,3 +51,12 @@ def run():
 
     if len(sys.argv) == 2:
         intercept(sys.argv[1])
+    if len(sys.argv) == 3:
+        if sys.argv[1] == 'undo':
+            unintercept(sys.argv[2])
+        else:
+            print('''Unrecognized command. Usage:
+* intercept foo - intercept foo
+* intercept undo foo - cancel intercepting foo
+''')
+            sys.exit(1)
