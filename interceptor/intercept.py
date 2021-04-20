@@ -8,6 +8,8 @@ from satella.files import write_to_file, read_in_file
 from interceptor.config import load_config_for
 from interceptor.whereis import filter_whereis
 
+INTERCEPTED = '-intercepted'
+
 
 def intercept(tool_name: str) -> None:
     source_file = pkg_resources.resource_filename(__name__, 'templates/cmdline.py')
@@ -18,7 +20,7 @@ def intercept(tool_name: str) -> None:
         shutil.copy(pkg_resources.resource_filename(__name__, 'templates/config'),
                     os.path.join('/etc/interceptor.d', tool_name))
     source = filter_whereis(sys.argv[1])
-    target_intercepted = source+'-intercepted'
+    target_intercepted = source+INTERCEPTED
     if os.path.exists(target_intercepted):
         print('Target already intercepted. Aborting.')
         sys.exit(1)
@@ -34,11 +36,10 @@ def intercept(tool_name: str) -> None:
 
 
 def unintercept(app_name: str) -> None:
-    f_name = app_name + '-intercepted'
-    source = filter_whereis(f_name)
-    src_name = source[:-len('-intercepted')]
+    source = filter_whereis(app_name + INTERCEPTED)
+    src_name = source[:-len(INTERCEPTED)]
     os.unlink(src_name)
-    shutil.copy(source, src_name)
+    shutil.move(source, src_name)
     print('Successfully unintercepted %s' % (app_name, ))
     print('Leaving the configuration in place')
 
