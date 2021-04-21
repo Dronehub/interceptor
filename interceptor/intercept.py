@@ -52,6 +52,12 @@ def unintercept(app_name: str) -> None:
     print('Leaving the configuration in place')
 
 
+def assert_intercepted(app_name: str):
+    if not is_intercepted(app_name):
+        print('%s is not intercepted' % (app_name,))
+        sys.exit(1)
+
+
 def run():
 
     if not os.path.exists('/etc/interceptor.d'):
@@ -63,7 +69,9 @@ def run():
     if len(sys.argv) == 3:
         op_name = sys.argv[1]
         app_name = sys.argv[2]
+
         if op_name == 'undo':
+            assert_intercepted(app_name)
             unintercept(app_name)
         elif op_name == 'status':
             if is_intercepted(app_name):
@@ -71,9 +79,7 @@ def run():
             else:
                 print('%s is NOT intercepted' % (app_name, ))
         elif op_name == 'configure':
-            if not is_intercepted(app_name):
-                print('%s is not intercepted' % (app_name, ))
-                sys.exit(1)
+            assert_intercepted(app_name)
             data = sys.stdin.read()
             try:
                 json.loads(data)
@@ -83,23 +89,35 @@ def run():
             write_to_file(os.path.join('/etc/interceptor.d', app_name), data, 'utf-8')
             print('Configuration successfully written')
         elif op_name == 'show':
+            assert_intercepted(app_name)
             config = read_in_file(os.path.join('/etc/interceptor.d', app_name), 'utf-8')
             print(config)
         elif op_name == 'display':
+            assert_intercepted(app_name)
             cfg = load_config_for(app_name)
             cfg.display_before_start = True
             cfg.save()
             print('Configuration changed')
         elif op_name == 'hide':
+            assert_intercepted(app_name)
             cfg = load_config_for(app_name)
             cfg.display_before_start = False
             cfg.save()
             print('Configuration changed')
+        elif op_name == 'edit':
+            assert_intercepted(app_name)
+            editor = filter_whereis('nano', abort_on_failure=False)
+            if editor is None:
+                editor = filter_whereis('vi')
+            os.execv(editor, [os.path.join('/etc/interceptor.d', app_name)])
         else:
             print('''Unrecognized command. Usage:
 * intercept foo - intercept foo
 * intercept undo foo - cancel intercepting foo
 * intercept configure foo - type in the configuration for foo in JSON format, end with Ctrl+D
 * intercept show foo - show the configuration for foo
+* intercept display foo - enable displaying what is launched on foo's startup
+* intercept hide foo - disable displaying what is launched on foo's startup
+* intercept edit foo - launch a nano/vi to edit it's configuration
 ''')
             sys.exit(1)

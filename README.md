@@ -116,3 +116,8 @@ To hide the display type:
 ```bash
 intercept hide foo
 ```
+
+To have nano/vi run to edit your config file type:
+```bash
+intercept edit foo
+```

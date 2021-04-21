@@ -10,3 +10,4 @@ This is only for new-version changes:
 * added the `show` command
 * added the `display` command
 * added the `hide` command
+* added the `edit` command
