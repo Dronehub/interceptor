@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 import sys
@@ -29,7 +30,8 @@ def intercept(tool_name: str) -> None:
     source_content = read_in_file(source_file, 'utf-8')
     source_content = source_content.format(EXECUTABLE=sys.executable,
                                            TOOLNAME=tool_name,
-                                           LOCATION=target_intercepted)
+                                           LOCATION=target_intercepted,
+                                           VERSION=pkg_resources.require('interceptor')[0].version)
     write_to_file(source, source_content, 'utf-8')
     os.chmod(source, 0o555)
     print('Successfully intercepted %s' % (tool_name, ))
@@ -59,16 +61,35 @@ def run():
     if len(sys.argv) == 2:
         intercept(sys.argv[1])
     if len(sys.argv) == 3:
-        if sys.argv[1] == 'undo':
-            unintercept(sys.argv[2])
-        elif sys.argv[1] == 'status':
-            if is_intercepted(sys.argv[2]):
-                print('%s is intercepted' % (sys.argv[2], ))
+        op_name = sys.argv[1]
+        app_name = sys.argv[2]
+        if op_name == 'undo':
+            unintercept(app_name)
+        elif op_name == 'status':
+            if is_intercepted(app_name):
+                print('%s is intercepted' % (app_name, ))
             else:
-                print('%s is NOT intercepted' % (sys.argv[2], ))
+                print('%s is NOT intercepted' % (app_name, ))
+        elif op_name == 'configure':
+            if not is_intercepted(app_name):
+                print('%s is not intercepted' % (app_name, ))
+                sys.exit(1)
+            data = sys.stdin.read()
+            try:
+                json.loads(data)
+            except json.JSONDecoder:
+                print('Configuration is invalid JSON')
+                sys.exit(1)
+            write_to_file(os.path.join('/etc/interceptor.d', app_name), data, 'utf-8')
+            print('Configuration successfully written')
+        elif op_name == 'show':
+            config = read_in_file(os.path.join('/etc/interceptor.d', app_name), 'utf-8')
+            print(config)
         else:
             print('''Unrecognized command. Usage:
 * intercept foo - intercept foo
 * intercept undo foo - cancel intercepting foo
+* intercept configure foo - type in the configuration for foo in JSON format, end with Ctrl+D
+* intercept show foo - show the configuration for foo
 ''')
             sys.exit(1)

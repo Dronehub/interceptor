@@ -93,3 +93,16 @@ To check whether `foo` is being intercepted type:
 ```bash
 intercept status foo
 ```
+
+To provide configuration for `foo` type
+
+```bash
+intercept configure foo```
+```
+And type in the configuration in JSON format, followed by Ctrl+D.
+
+To display current configuration for `foo` type:
+
+```bash
+intercept show foo
+``` 

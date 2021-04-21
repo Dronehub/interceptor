@@ -17,9 +17,10 @@ class Configuration:
         self.args_to_append_before = args_to_append_before or []
         self.args_to_replace = args_to_replace or []
         self.display_before_start = display_before_start
+        self.app_name = None
 
     @for_argument(None, copy.copy)
-    def modify(self, args, app_name):
+    def modify(self, args, *extra_args):
         process, *arguments = args
         for arg_to_take_away in self.args_to_take_away:
             if arg_to_take_away in arguments:
@@ -38,16 +39,9 @@ class Configuration:
                 arguments[arguments.index(arg_to_replace)] = arg_to_replace_with
 
         if self.display_before_start:
-            print('%s %s' % (app_name, ' '.join(arguments)))
+            print('%s %s' % (self.app_name, ' '.join(arguments)))
 
         return [process, *arguments]
-
-    def to_json(self):
-        return {'args_to_take_away': self.args_to_take_away,
-                'args_to_append': self.args_to_append,
-                'args_to_append_before': self.args_to_append_before,
-                'args_to_replace': self.args_to_replace,
-                'display_before_start': self.display_before_start}
 
     @classmethod
     def from_json(cls, dct):
@@ -63,4 +57,6 @@ def load_config_for(name: str) -> Configuration:
     if not os.path.exists(file_name):
         raise KeyError('Configuration for %s does not exist' % (name, ))
 
-    return Configuration.from_json(read_json_from_file(file_name))
+    cfg = Configuration.from_json(read_json_from_file(file_name))
+    cfg.app_name = name
+    return cfg
