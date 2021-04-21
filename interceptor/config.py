@@ -23,7 +23,7 @@ class Configuration:
         self.app_name = None
 
     def to_json(self):
-        return {'args_to_take_away': self.args_to_take_away,
+        return {'args_to_disable': self.args_to_take_away,
                 'args_to_append': self.args_to_append,
                 'args_to_prepend': self.args_to_prepend,
                 'args_to_replace': self.args_to_replace,
@@ -66,7 +66,14 @@ class Configuration:
             if prepend is not None:
                 warnings.warn('args_to_append_before is deprecated, use args_to_prepend',
                               DeprecationWarning)
-        return Configuration(dct.get('args_to_take_away'),
+        take_away = dct.get('args_to_disable')
+        if take_away is None:
+            take_away = dct.get('args_to_take_away')
+            if take_away is not None:
+                warnings.warn('args_to_take_away is deprecated, use args_to_prepend',
+                              DeprecationWarning)
+
+        return Configuration(take_away,
                              dct.get('args_to_append'),
                              prepend,
                              dct.get('args_to_replace'),

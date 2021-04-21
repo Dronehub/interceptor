@@ -16,4 +16,4 @@ This is only for new-version changes:
 * added the `disable` command
 * added the `replace` command
 * deprecated `args_to_append_before` in configuration JSON
-
+* deprecated `args_to_take_away` in configuration JSON
