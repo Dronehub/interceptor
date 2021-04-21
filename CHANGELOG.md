@@ -11,3 +11,9 @@ This is only for new-version changes:
 * added the `display` command
 * added the `hide` command
 * added the `edit` command
+* added the `append` command
+* added the `prepend` command
+* added the `disable` command
+* added the `replace` command
+* deprecated `args_to_append_before` in configuration JSON
+

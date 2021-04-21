@@ -110,6 +110,19 @@ def run():
             if editor is None:
                 editor = filter_whereis('vi')
             os.execv(editor, [editor, os.path.join('/etc/interceptor.d', app_name)])
+        elif op_name in ('append', 'prepend', 'disable', 'replace'):
+            assert_intercepted(app_name)
+            cfg = load_config_for(app_name)
+            if op_name == 'append':
+                cfg.args_to_append.append(sys.argv[3])
+            elif op_name == 'prepend':
+                cfg.args_to_prepend.append(sys.argv[3])
+            elif op_name == 'disable':
+                cfg.args_to_take_away.append(sys.argv[3])
+            elif op_name == 'replace':
+                cfg.args_to_replace.append([sys.argv[3], sys.argv[4]])
+            cfg.save()
+            print('Configuration changed')
         else:
             print('''Unrecognized command. Usage:
 * intercept foo - intercept foo
@@ -119,5 +132,9 @@ def run():
 * intercept display foo - enable displaying what is launched on foo's startup
 * intercept hide foo - disable displaying what is launched on foo's startup
 * intercept edit foo - launch a nano/vi to edit it's configuration
+* intercept append foo ARG - add ARG to be appended to command line whenever foo is ran
+* intercept prepend foo ARG - add ARG to be prepended to command line whenever foo is ran
+* intercept disable foo ARG - add ARG to be eliminated from the command line whenever foo is ran
+* intercept replace foo ARG1 ARG2 - add ARG1 to be replaced with ARG2 whenever it is passed to foo
 ''')
             sys.exit(1)

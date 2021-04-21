@@ -2,6 +2,7 @@ import copy
 import json
 import os
 import typing as tp
+import warnings
 
 from satella.coding import for_argument
 from satella.files import write_to_file
@@ -11,12 +12,12 @@ from satella.json import read_json_from_file, write_json_to_file
 class Configuration:
     def __init__(self, args_to_take_away: tp.Optional[tp.List[str]] = None,
                  args_to_append: tp.Optional[tp.List[str]] = None,
-                 args_to_append_before: tp.Optional[tp.List[str]] = None,
+                 args_to_prepend: tp.Optional[tp.List[str]] = None,
                  args_to_replace: tp.Optional[tp.List[tp.Tuple[str, str]]] = None,
                  display_before_start: bool = False):
         self.args_to_take_away = args_to_take_away or []
         self.args_to_append = args_to_append or []
-        self.args_to_append_before = args_to_append_before or []
+        self.args_to_prepend = args_to_prepend or []
         self.args_to_replace = args_to_replace or []
         self.display_before_start = display_before_start
         self.app_name = None
@@ -24,7 +25,7 @@ class Configuration:
     def to_json(self):
         return {'args_to_take_away': self.args_to_take_away,
                 'args_to_append': self.args_to_append,
-                'args_to_append_before': self.args_to_append_before,
+                'args_to_prepend': self.args_to_prepend,
                 'args_to_replace': self.args_to_replace,
                 'display_before_start': self.display_before_start}
 
@@ -39,7 +40,7 @@ class Configuration:
             if arg_to_append not in arguments:
                 arguments.append(arg_to_append)
 
-        for arg_to_append_before in self.args_to_append_before:
+        for arg_to_append_before in self.args_to_prepend:
             if arg_to_append_before not in arguments:
                 arguments = [arg_to_append_before] + arguments
 
@@ -59,9 +60,15 @@ class Configuration:
 
     @classmethod
     def from_json(cls, dct):
+        prepend = dct.get('args_to_prepend')
+        if prepend is None:
+            prepend = dct.get('args_to_append_before')
+            if prepend is not None:
+                warnings.warn('args_to_append_before is deprecated, use args_to_prepend',
+                              DeprecationWarning)
         return Configuration(dct.get('args_to_take_away'),
                              dct.get('args_to_append'),
-                             dct.get('args_to_append_before'),
+                             prepend,
                              dct.get('args_to_replace'),
                              dct.get('display_before_start', False))
 

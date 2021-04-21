@@ -33,7 +33,7 @@ with the following contents:
 {
   "args_to_take_away": ["-quiet"],
   "args_to_append": ["-DDEBUG"]],
-  "args_to_append_before": ["-v"],
+  "args_to_prepend": ["-v"],
   "args_to_replace": [["-march=native", "-mcpu=native"]],
   "display_before_start": true
 }
@@ -120,4 +120,29 @@ intercept hide foo
 To have nano/vi run to edit your config file type:
 ```bash
 intercept edit foo
+```
+
+To add an argument to be appended to the command type:
+
+```bash
+intercept append foo arg
+```
+
+To add an argument to be prepended to the command type:
+
+```bash
+intercept prepend foo arg
+```
+
+To add an argument to be elliminated if foo is called with it
+type:
+
+```bash
+intercept disable foo arg
+```
+
+To replace arg1 with arg2 each time foo is called type:
+
+```bash
+intercept replace foo arg1 arg2
 ```
