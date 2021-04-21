@@ -1,51 +1,61 @@
 import copy
-import json
 import os
 import typing as tp
 import warnings
 
 from satella.coding import for_argument
-from satella.files import write_to_file
 from satella.json import read_json_from_file, write_json_to_file
 
 
 class Configuration:
-    def __init__(self, args_to_take_away: tp.Optional[tp.List[str]] = None,
+    def __init__(self, args_to_disable: tp.Optional[tp.List[str]] = None,
                  args_to_append: tp.Optional[tp.List[str]] = None,
                  args_to_prepend: tp.Optional[tp.List[str]] = None,
                  args_to_replace: tp.Optional[tp.List[tp.Tuple[str, str]]] = None,
-                 display_before_start: bool = False):
-        self.args_to_take_away = args_to_take_away or []
+                 display_before_start: bool = False,
+                 notify_about_actions: bool = False):
+        self.args_to_disable = args_to_disable or []
         self.args_to_append = args_to_append or []
         self.args_to_prepend = args_to_prepend or []
         self.args_to_replace = args_to_replace or []
         self.display_before_start = display_before_start
+        self.notify_about_actions = notify_about_actions
         self.app_name = None
 
     def to_json(self):
-        return {'args_to_disable': self.args_to_take_away,
+        return {'args_to_disable': self.args_to_disable,
                 'args_to_append': self.args_to_append,
                 'args_to_prepend': self.args_to_prepend,
                 'args_to_replace': self.args_to_replace,
-                'display_before_start': self.display_before_start}
+                'display_before_start': self.display_before_start,
+                'notify_about_actions': self.notify_about_actions}
 
     @for_argument(None, copy.copy)
     def modify(self, args, *extra_args):
         process, *arguments = args
-        for arg_to_take_away in self.args_to_take_away:
+        for arg_to_take_away in self.args_to_disable:
             if arg_to_take_away in arguments:
+                if self.notify_about_actions:
+                    print('interceptor(%s): taking away %s' % (self.app_name, arg_to_take_away))
                 del arguments[arguments.index(arg_to_take_away)]
 
         for arg_to_append in self.args_to_append:
             if arg_to_append not in arguments:
+                if self.notify_about_actions:
+                    print('interceptor(%s): appending %s' % (self.app_name, arg_to_append))
                 arguments.append(arg_to_append)
 
-        for arg_to_append_before in self.args_to_prepend:
-            if arg_to_append_before not in arguments:
-                arguments = [arg_to_append_before] + arguments
+        for arg_to_prepend in self.args_to_prepend:
+            if arg_to_prepend not in arguments:
+                if self.notify_about_actions:
+                    print('interceptor(%s): prepending %s' % (self.app_name, arg_to_prepend))
+                arguments = [arg_to_prepend] + arguments
 
         for arg_to_replace, arg_to_replace_with in self.args_to_replace:
             if arg_to_replace in arguments:
+                if self.notify_about_actions:
+                    print('interceptor(%s): replacing %s with %s' % (self.app_name, arg_to_replace,
+                                                                     arg_to_replace_with))
                 arguments[arguments.index(arg_to_replace)] = arg_to_replace_with
 
         if self.display_before_start:
@@ -77,7 +87,8 @@ class Configuration:
                              dct.get('args_to_append'),
                              prepend,
                              dct.get('args_to_replace'),
-                             dct.get('display_before_start', False))
+                             dct.get('display_before_start', False),
+                             dct.get('notify_about_actions', False))
 
 
 def load_config_for(name: str) -> Configuration:

@@ -31,23 +31,24 @@ with the following contents:
 
 ```json
 {
-  "args_to_take_away": ["-quiet"],
+  "args_to_disable": ["-quiet"],
   "args_to_append": ["-DDEBUG"]],
   "args_to_prepend": ["-v"],
   "args_to_replace": [["-march=native", "-mcpu=native"]],
-  "display_before_start": true
+  "display_before_start": true,
+  "notify_about_actions": false
 }
 ```
 
 #### Configuring
 
 If the intercepted command sees any arguments given in 
-`args_to_take_away` they will be removed before being passed to target command.
+`args_to_disable` they will be removed before being passed to target command.
 
 If arguments in `args_to_append` are not in arguments, 
 they will be appended to the arguments.
 
-If arguments in `args_to_append_before` are not in arguments,
+If arguments in `args_to_prepend` are not in arguments,
 they will be prepended to arguments.
 
 You give two-item lists in `args_to_replace`. If
@@ -57,6 +58,9 @@ If you don't prepare the configuration file in advance, an empty file will be cr
      
 If `display_before_start` is set, then before the launch
 the application name and parameters actually passed to it will be displayed on stdout.
+     
+If `notify_about_actions` is set, then interceptor will print out
+each case an action is attempted.     
      
 ### The intercept command
 
@@ -145,4 +149,14 @@ To replace arg1 with arg2 each time foo is called type:
 
 ```bash
 intercept replace foo arg1 arg2
+```
+
+To have intercept display when an action is taken type:
+```bash
+intercept notify foo
+```
+
+To hide the notifications type:
+```bash
+intercept unnotify foo
 ```

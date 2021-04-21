@@ -92,25 +92,14 @@ def run():
             assert_intercepted(app_name)
             config = read_in_file(os.path.join('/etc/interceptor.d', app_name), 'utf-8')
             print(config)
-        elif op_name == 'display':
-            assert_intercepted(app_name)
-            cfg = load_config_for(app_name)
-            cfg.display_before_start = True
-            cfg.save()
-            print('Configuration changed')
-        elif op_name == 'hide':
-            assert_intercepted(app_name)
-            cfg = load_config_for(app_name)
-            cfg.display_before_start = False
-            cfg.save()
-            print('Configuration changed')
         elif op_name == 'edit':
             assert_intercepted(app_name)
             editor = filter_whereis('nano', abort_on_failure=False)
             if editor is None:
                 editor = filter_whereis('vi')
             os.execv(editor, [editor, os.path.join('/etc/interceptor.d', app_name)])
-        elif op_name in ('append', 'prepend', 'disable', 'replace'):
+        elif op_name in ('append', 'prepend', 'disable', 'replace', 'display', 'hide',
+                         'notify', 'unnotify'):
             assert_intercepted(app_name)
             cfg = load_config_for(app_name)
             if op_name == 'append':
@@ -118,9 +107,17 @@ def run():
             elif op_name == 'prepend':
                 cfg.args_to_prepend.append(sys.argv[3])
             elif op_name == 'disable':
-                cfg.args_to_take_away.append(sys.argv[3])
+                cfg.args_to_disable.append(sys.argv[3])
             elif op_name == 'replace':
                 cfg.args_to_replace.append([sys.argv[3], sys.argv[4]])
+            elif op_name == 'display':
+                cfg.display_before_start = True
+            elif op_name == 'hide':
+                cfg.display_before_start = False
+            elif op_name == 'notify':
+                cfg.notify_about_actions = True
+            elif op_name == 'unnotify':
+                cfg.notify_about_actions = False
             cfg.save()
             print('Configuration changed')
         else:
@@ -136,5 +133,7 @@ def run():
 * intercept prepend foo ARG - add ARG to be prepended to command line whenever foo is ran
 * intercept disable foo ARG - add ARG to be eliminated from the command line whenever foo is ran
 * intercept replace foo ARG1 ARG2 - add ARG1 to be replaced with ARG2 whenever it is passed to foo
+* intercept notify foo - display a notification each time an argument action is taken
+* intercept unnotify foo - hide the notification each time an argument action is taken
 ''')
             sys.exit(1)
