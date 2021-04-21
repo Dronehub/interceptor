@@ -53,7 +53,9 @@ class Configuration:
         return [process, *arguments]
 
     def save(self):
-        write_json_to_file(os.path.join('/etc/interceptor.d', self.app_name), self.to_json())
+        write_json_to_file(os.path.join('/etc/interceptor.d', self.app_name), self.to_json(),
+                           sort_keys=True,
+                           indent=4)
 
     @classmethod
     def from_json(cls, dct):
