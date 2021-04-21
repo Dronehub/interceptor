@@ -85,6 +85,16 @@ def run():
         elif op_name == 'show':
             config = read_in_file(os.path.join('/etc/interceptor.d', app_name), 'utf-8')
             print(config)
+        elif op_name == 'display':
+            cfg = load_config_for(app_name)
+            cfg.display_before_start = True
+            cfg.save()
+            print('Configuration changed')
+        elif op_name == 'hide':
+            cfg = load_config_for(app_name)
+            cfg.display_before_start = False
+            cfg.save()
+            print('Configuration changed')
         else:
             print('''Unrecognized command. Usage:
 * intercept foo - intercept foo

@@ -106,3 +106,13 @@ To display current configuration for `foo` type:
 ```bash
 intercept show foo
 ``` 
+
+To have intercept display when the tool is called type:
+```bash
+intercept display foo
+```
+
+To hide the display type:
+```bash
+intercept hide foo
+```

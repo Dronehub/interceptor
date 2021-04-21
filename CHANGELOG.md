@@ -8,3 +8,5 @@ This is only for new-version changes:
 * added the `status` command
 * added the `configure` command
 * added the `show` command
+* added the `display` command
+* added the `hide` command

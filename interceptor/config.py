@@ -1,9 +1,11 @@
 import copy
+import json
 import os
 import typing as tp
 
 from satella.coding import for_argument
-from satella.json import read_json_from_file
+from satella.files import write_to_file
+from satella.json import read_json_from_file, write_json_to_file
 
 
 class Configuration:
@@ -18,6 +20,13 @@ class Configuration:
         self.args_to_replace = args_to_replace or []
         self.display_before_start = display_before_start
         self.app_name = None
+
+    def to_json(self):
+        return {'args_to_take_away': self.args_to_take_away,
+                'args_to_append': self.args_to_append,
+                'args_to_append_before': self.args_to_append_before,
+                'args_to_replace': self.args_to_replace,
+                'display_before_start': self.display_before_start}
 
     @for_argument(None, copy.copy)
     def modify(self, args, *extra_args):
@@ -42,6 +51,9 @@ class Configuration:
             print('%s %s' % (self.app_name, ' '.join(arguments)))
 
         return [process, *arguments]
+
+    def save(self):
+        write_json_to_file(os.path.join('/etc/interceptor.d', self.app_name), self.to_json())
 
     @classmethod
     def from_json(cls, dct):
