@@ -109,7 +109,7 @@ def run():
             editor = filter_whereis('nano', abort_on_failure=False)
             if editor is None:
                 editor = filter_whereis('vi')
-            os.execv(editor, [os.path.join('/etc/interceptor.d', app_name)])
+            os.execv(editor, [editor, os.path.join('/etc/interceptor.d', app_name)])
         else:
             print('''Unrecognized command. Usage:
 * intercept foo - intercept foo
