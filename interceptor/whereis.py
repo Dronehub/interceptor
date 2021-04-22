@@ -45,11 +45,10 @@ def filter_whereis(app: str, abort_on_failure=True) -> tp.Optional[str]:
     Return a position of an executable. Verify that it's executable.
     """
     for path in whereis(app):
-        if os.access(path, os. X_OK):
+        if os.access(path, os.X_OK):
             return path
     if not abort_on_failure:
         return None
     else:
-        print('%s not found, aborting' % (app, ))
+        print('%s not found, aborting' % (app,))
         sys.exit(1)
-

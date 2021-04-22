@@ -18,11 +18,11 @@ def intercept(tool_name: str) -> None:
     try:
         load_config_for(tool_name)
     except KeyError:
-        print('No configuration found for %s, creating a default one' % (tool_name, ))
+        print('No configuration found for %s, creating a default one' % (tool_name,))
         shutil.copy(pkg_resources.resource_filename(__name__, 'templates/config'),
                     os.path.join('/etc/interceptor.d', tool_name))
     source = filter_whereis(sys.argv[1])
-    target_intercepted = source+INTERCEPTED
+    target_intercepted = source + INTERCEPTED
     if os.path.exists(target_intercepted):
         print('Target already intercepted. Aborting.')
         sys.exit(1)
@@ -35,12 +35,12 @@ def intercept(tool_name: str) -> None:
                                            VERSION=pkg_resources.require('interceptor')[0].version)
     write_to_file(source, source_content, 'utf-8')
     os.chmod(source, 0o555)
-    print('Successfully intercepted %s' % (tool_name, ))
+    print('Successfully intercepted %s' % (tool_name,))
 
 
 def is_intercepted(app_name: str) -> bool:
     path = filter_whereis(app_name)
-    return os.path.exists(path) and os.path.exists(path+INTERCEPTED) \
+    return os.path.exists(path) and os.path.exists(path + INTERCEPTED) \
            and os.path.exists(os.path.join('/etc/interceptor.d', app_name))
 
 
@@ -49,7 +49,7 @@ def unintercept(app_name: str) -> None:
     src_name = source[:-len(INTERCEPTED)]
     os.unlink(src_name)
     shutil.move(source, src_name)
-    print('Successfully unintercepted %s' % (app_name, ))
+    print('Successfully unintercepted %s' % (app_name,))
     print('Leaving the configuration in place')
 
 
@@ -95,15 +95,15 @@ def run():
             unintercept(app_name)
         elif op_name == 'status':
             if is_intercepted(app_name):
-                print('%s is intercepted' % (app_name, ))
+                print('%s is intercepted' % (app_name,))
                 cfg_path = os.path.join('/etc/interceptor.d', app_name)
                 if os.path.islink(cfg_path):
                     tgt_link = os.readlink(cfg_path).split('/')[-1]
-                    print('%s is scheduled to read configuration from %s' % (tgt_link, ))
+                    print('%s is scheduled to read configuration from %s' % (app_name, tgt_link))
                 else:
-                    print('%s has it\'s own configuration' % (app_name, ))
+                    print('%s has it\'s own configuration' % (app_name,))
             else:
-                print('%s is NOT intercepted' % (app_name, ))
+                print('%s is NOT intercepted' % (app_name,))
         elif op_name == 'configure':
             assert_intercepted(app_name)
             data = sys.stdin.read()
@@ -160,7 +160,7 @@ def run():
             cfg.save()
             print('Configuration reset')
         else:
-            print('Unrecognized command %s' % (op_name, ))
+            print('Unrecognized command %s' % (op_name,))
             banner()
             sys.exit(1)
     else:

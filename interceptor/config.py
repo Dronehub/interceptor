@@ -94,7 +94,7 @@ class Configuration:
 def load_config_for(name: str) -> Configuration:
     file_name = os.path.join('/etc/interceptor.d', name)
     if not os.path.exists(file_name):
-        raise KeyError('Configuration for %s does not exist' % (name, ))
+        raise KeyError('Configuration for %s does not exist' % (name,))
 
     cfg = Configuration.from_json(read_json_from_file(file_name))
     cfg.app_name = name
