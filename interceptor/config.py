@@ -1,8 +1,10 @@
 import copy
 import os
+import sys
 import typing as tp
 import warnings
 
+import pkg_resources
 from satella.coding import for_argument
 from satella.json import read_json_from_file, write_json_to_file
 
@@ -91,7 +93,23 @@ class Configuration:
                              dct.get('notify_about_actions', False))
 
 
-def load_config_for(name: str) -> Configuration:
+def assert_correct_version(version: str) -> None:
+    if version == '':
+        print('You have used an older version of interceptor to intercept this command.\n'
+              'It is advised to undo the interception and reintercept the call to upgrade.')
+        return
+    my_version = pkg_resources.require('interceptor')[0].version
+    if int(version.split('.')[0]) > int(my_version.split('.')[0]):
+        sys.stderr.write('You have intercepted this call using a higher version of Interceptor. \n'
+                         'This might not work as advertised. Try undo\'ing the interception \n'
+                         'and intercepting this again.\n'
+                         'Aborting.')
+        sys.exit(1)
+
+
+def load_config_for(name: str, version: str = '') -> Configuration:
+    assert_correct_version(version)
+
     file_name = os.path.join('/etc/interceptor.d', name)
     if not os.path.exists(file_name):
         raise KeyError('Configuration for %s does not exist' % (name,))
