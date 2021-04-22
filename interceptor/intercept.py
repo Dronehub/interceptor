@@ -6,7 +6,7 @@ import sys
 import pkg_resources
 from satella.files import write_to_file, read_in_file
 
-from interceptor.config import load_config_for
+from interceptor.config import load_config_for, Configuration
 from interceptor.whereis import filter_whereis
 
 INTERCEPTED = '-intercepted'
@@ -58,15 +58,34 @@ def assert_intercepted(app_name: str):
         sys.exit(1)
 
 
-def run():
+def banner():
+    print('''Unrecognized command. Usage:
+    * intercept foo - intercept foo
+    * intercept undo foo - cancel intercepting foo
+    * intercept configure foo - type in the configuration for foo in JSON format, end with Ctrl+D
+    * intercept show foo - show the configuration for foo
+    * intercept display foo - enable displaying what is launched on foo's startup
+    * intercept hide foo - disable displaying what is launched on foo's startup
+    * intercept edit foo - launch a nano/vi to edit it's configuration
+    * intercept append foo ARG - add ARG to be appended to command line whenever foo is ran
+    * intercept prepend foo ARG - add ARG to be prepended to command line whenever foo is ran
+    * intercept disable foo ARG - add ARG to be eliminated from the command line whenever foo is ran
+    * intercept replace foo ARG1 ARG2 - add ARG1 to be replaced with ARG2 whenever it is passed to foo
+    * intercept notify foo - display a notification each time an argument action is taken
+    * intercept unnotify foo - hide the notification each time an argument action is taken
+    * intercept link foo bar - symlink bar's config file to that of foo
+    * intercept reset foo - reset foo's configuration (delete it and create a new one)
+    ''')
 
+
+def run():
     if not os.path.exists('/etc/interceptor.d'):
         print('/etc/interceptor.d does not exist, creating...')
         os.mkdir('/etc/interceptor.d')
 
     if len(sys.argv) == 2:
         intercept(sys.argv[1])
-    if len(sys.argv) == 3:
+    elif len(sys.argv) == 3:
         op_name = sys.argv[1]
         app_name = sys.argv[2]
 
@@ -120,20 +139,21 @@ def run():
                 cfg.notify_about_actions = False
             cfg.save()
             print('Configuration changed')
+        elif op_name == 'link':
+            os.system('ln -s %s %s' % (
+                os.path.join('/etc/interceptor.d', app_name),
+                os.path.join('/etc/interceptor.d', sys.argv[3])
+            ))
+            print('Linked %s to read from %s''s config' % (sys.argv[3], app_name))
+        elif op_name == 'reset':
+            os.unlink(os.path.join('/etc/interceptor.d', app_name))
+            cfg = Configuration()
+            cfg.app_name = app_name
+            cfg.save()
+            print('Configuration reset')
         else:
-            print('''Unrecognized command. Usage:
-* intercept foo - intercept foo
-* intercept undo foo - cancel intercepting foo
-* intercept configure foo - type in the configuration for foo in JSON format, end with Ctrl+D
-* intercept show foo - show the configuration for foo
-* intercept display foo - enable displaying what is launched on foo's startup
-* intercept hide foo - disable displaying what is launched on foo's startup
-* intercept edit foo - launch a nano/vi to edit it's configuration
-* intercept append foo ARG - add ARG to be appended to command line whenever foo is ran
-* intercept prepend foo ARG - add ARG to be prepended to command line whenever foo is ran
-* intercept disable foo ARG - add ARG to be eliminated from the command line whenever foo is ran
-* intercept replace foo ARG1 ARG2 - add ARG1 to be replaced with ARG2 whenever it is passed to foo
-* intercept notify foo - display a notification each time an argument action is taken
-* intercept unnotify foo - hide the notification each time an argument action is taken
-''')
+            print('Unrecognized command %s' % (op_name, ))
+            banner()
             sys.exit(1)
+    else:
+        banner()

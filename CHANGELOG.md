@@ -6,4 +6,6 @@ This is only for new-version changes:
 
 * added `notify` and `unnotify` command
 * added the `notify_about_actions` configuration
+* added the `link` and `reset` command
+* added display the banner on invalid invocation
 

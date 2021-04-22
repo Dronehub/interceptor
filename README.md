@@ -160,3 +160,17 @@ To hide the notifications type:
 ```bash
 intercept unnotify foo
 ```
+
+To symlink bar's configuration to that of foo type:
+
+```bash
+intercept link foo bar
+```
+
+To reset configuration of foo, type
+```bash
+intercept reset foo
+```
+
+Note that this will unlink foo is it is already a symlink.
+
