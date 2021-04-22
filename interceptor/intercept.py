@@ -26,6 +26,13 @@ def intercept(tool_name: str) -> None:
     if os.path.exists(target_intercepted):
         print('Target already intercepted. Aborting.')
         sys.exit(1)
+    with silence_excs(UnicodeDecodeError), open(source, 'rb') as f_in:
+        shebang = f_in.read(2)
+        if shebang == b'#!':
+            data = f_in.read(512).decode('utf-8')
+            if 'from interceptor.config import load_config_for' in data:
+                print('Target is already interceptor\'s wrapper. Aborting.')
+                sys.exit(1)
     shutil.copy(source, target_intercepted)
     os.unlink(source)
     source_content = read_in_file(source_file, 'utf-8')
@@ -147,13 +154,19 @@ def run():
             cfg.save()
             print('Configuration changed')
         elif op_name == 'link':
+            assert_intercepted(app_name)
+            assert_intercepted(sys.argv[3])
             source = os.path.join('/etc/interceptor.d', app_name)
             target = os.path.join('/etc/interceptor.d', sys.argv[3])
+            if os.path.islink(source) and '--force' not in sys.argv[4:]:
+                print('Refusing to link, since %s is already a symlink!' % (app_name, ))
+                sys.exit(1)
             with silence_excs(IOError):
                 os.unlink(target)
             os.system('ln -s %s %s' % (source, target))
             print('Linked %s to read from %s''s config' % (sys.argv[3], app_name))
         elif op_name == 'reset':
+            assert_intercepted(app_name)
             os.unlink(os.path.join('/etc/interceptor.d', app_name))
             cfg = Configuration()
             cfg.app_name = app_name

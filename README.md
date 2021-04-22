@@ -85,6 +85,8 @@ Interceptor should display the following:
 Successfully intercepted foo
 ```
 
+Note that you will be unable to proceed if foo is already an interceptor wrapper.
+
 A Python wrapper will be found at previous location of 
 foo, while it itself will be copied to the same directory
 but named `foo-intercepted`.
@@ -170,6 +172,12 @@ To symlink bar's configuration to that of foo type:
 
 ```bash
 intercept link foo bar
+```
+
+Note that intercept will refuse to link to foo if foo is already a symlink.
+To circumvent that type:
+```bash
+intercept link foo bar --force
 ```
 
 To reset configuration of foo, type
