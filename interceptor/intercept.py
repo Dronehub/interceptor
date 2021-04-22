@@ -86,7 +86,7 @@ def run():
 
     if len(sys.argv) == 2:
         intercept(sys.argv[1])
-    elif len(sys.argv) == 3:
+    elif len(sys.argv) >= 3:
         op_name = sys.argv[1]
         app_name = sys.argv[2]
 
