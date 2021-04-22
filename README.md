@@ -1,4 +1,5 @@
 # interceptor
+[![Maintainability](https://api.codeclimate.com/v1/badges/8e423b83128c001fc6a2/maintainability)](https://codeclimate.com/github/Cervi-Robotics/interceptor/maintainability)
 
 A tool to intercept calls to your command line tools and alter their args.
 
