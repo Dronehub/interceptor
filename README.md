@@ -49,8 +49,12 @@ If the intercepted command sees any arguments given in
 If arguments in `args_to_append` are not in arguments, 
 they will be appended to the arguments.
 
+The arguments in `args_to_append` will be appended in the order they are listed.
+
 If arguments in `args_to_prepend` are not in arguments,
 they will be prepended to arguments.
+
+The arguments in `args_to_prepend` will be appended in the order they are listed.
 
 You give two-item lists in `args_to_replace`. If
 the first item occurs in arguments, it will be replaced by the second item. 

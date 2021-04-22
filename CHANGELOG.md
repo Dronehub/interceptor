@@ -10,3 +10,5 @@ This is only for new-version changes:
 * added display the banner on invalid invocation
 * `status` will display symlinking of configs
 * lower versions of interceptor will fail to execute scripts from newer one
+* stronger guarantees about argument order
+

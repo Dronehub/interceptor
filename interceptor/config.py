@@ -47,7 +47,7 @@ class Configuration:
                     print('interceptor(%s): appending %s' % (self.app_name, arg_to_append))
                 arguments.append(arg_to_append)
 
-        for arg_to_prepend in self.args_to_prepend:
+        for arg_to_prepend in reversed(self.args_to_prepend):
             if arg_to_prepend not in arguments:
                 if self.notify_about_actions:
                     print('interceptor(%s): prepending %s' % (self.app_name, arg_to_prepend))
