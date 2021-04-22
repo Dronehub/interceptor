@@ -96,6 +96,12 @@ def run():
         elif op_name == 'status':
             if is_intercepted(app_name):
                 print('%s is intercepted' % (app_name, ))
+                cfg_path = os.path.join('/etc/interceptor.d', app_name)
+                if os.path.islink(cfg_path):
+                    tgt_link = os.readlink(cfg_path).split('/')[-1]
+                    print('%s is scheduled to read configuration from %s' % (tgt_link, ))
+                else:
+                    print('%s has it\'s own configuration' % (app_name, ))
             else:
                 print('%s is NOT intercepted' % (app_name, ))
         elif op_name == 'configure':
