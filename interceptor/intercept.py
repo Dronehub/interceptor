@@ -16,7 +16,7 @@ INTERCEPTED = '-intercepted'
 def intercept(tool_name: str) -> None:
     source_file = pkg_resources.resource_filename(__name__, 'templates/cmdline.py')
     try:
-        load_config_for(tool_name)
+        load_config_for(tool_name, None)
     except KeyError:
         print('No configuration found for %s, creating a default one' % (tool_name,))
         shutil.copy(pkg_resources.resource_filename(__name__, 'templates/config'),
@@ -127,7 +127,7 @@ def run():
         elif op_name in ('append', 'prepend', 'disable', 'replace', 'display', 'hide',
                          'notify', 'unnotify'):
             assert_intercepted(app_name)
-            cfg = load_config_for(app_name)
+            cfg = load_config_for(app_name, None)
             if op_name == 'append':
                 cfg.args_to_append.append(sys.argv[3])
             elif op_name == 'prepend':

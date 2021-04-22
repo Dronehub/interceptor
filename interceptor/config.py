@@ -107,8 +107,9 @@ def assert_correct_version(version: str) -> None:
         sys.exit(1)
 
 
-def load_config_for(name: str, version: str = '') -> Configuration:
-    assert_correct_version(version)
+def load_config_for(name: str, version: tp.Optional[str] = '') -> Configuration:
+    if version is not None:
+        assert_correct_version(version)
 
     file_name = os.path.join('/etc/interceptor.d', name)
     if not os.path.exists(file_name):
