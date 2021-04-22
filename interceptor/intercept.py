@@ -4,6 +4,7 @@ import shutil
 import sys
 
 import pkg_resources
+from satella.coding import silence_excs
 from satella.files import write_to_file, read_in_file
 
 from interceptor.config import load_config_for, Configuration
@@ -140,10 +141,11 @@ def run():
             cfg.save()
             print('Configuration changed')
         elif op_name == 'link':
-            os.system('ln -s %s %s' % (
-                os.path.join('/etc/interceptor.d', app_name),
-                os.path.join('/etc/interceptor.d', sys.argv[3])
-            ))
+            source = os.path.join('/etc/interceptor.d', app_name)
+            target = os.path.join('/etc/interceptor.d', sys.argv[3])
+            with silence_excs(IOError):
+                os.unlink(target)
+            os.system('ln -s %s %s' % (source, target))
             print('Linked %s to read from %s''s config' % (sys.argv[3], app_name))
         elif op_name == 'reset':
             os.unlink(os.path.join('/etc/interceptor.d', app_name))
