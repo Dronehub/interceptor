@@ -174,6 +174,13 @@ To symlink bar's configuration to that of foo type:
 intercept link foo bar
 ```
 
+To copy foo's configuration to that of bar type:
+
+```bash
+intercept copy foo bar
+```
+
+
 Note that intercept will refuse to link to foo if foo is already a symlink.
 To circumvent that type:
 ```bash

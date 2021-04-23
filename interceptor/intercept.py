@@ -11,6 +11,7 @@ from interceptor.config import load_config_for, Configuration
 from interceptor.whereis import filter_whereis
 
 INTERCEPTED = '-intercepted'
+INTEREPTOR_WRAPPER_STRING = 'from interceptor.config import load_config_for'
 
 
 def intercept(tool_name: str) -> None:
@@ -30,7 +31,7 @@ def intercept(tool_name: str) -> None:
         shebang = f_in.read(2)
         if shebang == b'#!':
             data = f_in.read(512).decode('utf-8')
-            if 'from interceptor.config import load_config_for' in data:
+            if INTERCEPTOR_WRAPPER_STRING in data:
                 print('Target is already interceptor\'s wrapper. Aborting.')
                 sys.exit(1)
     shutil.copy(source, target_intercepted)
@@ -47,8 +48,10 @@ def intercept(tool_name: str) -> None:
 
 def is_intercepted(app_name: str) -> bool:
     path = filter_whereis(app_name)
-    return os.path.exists(path) and os.path.exists(path + INTERCEPTED) \
-           and os.path.exists(os.path.join('/etc/interceptor.d', app_name))
+
+    with silence_excs(UnicodeDecodeError), open(path, 'rb') as f_in:
+        intercepted_real = f_in.read(512).decode('utf-8')
+        return INTEREPTOR_WRAPPER_STRING in intercepted_real
 
 
 def unintercept(app_name: str) -> None:
@@ -82,6 +85,7 @@ def banner():
     * intercept notify foo - display a notification each time an argument action is taken
     * intercept unnotify foo - hide the notification each time an argument action is taken
     * intercept link foo bar - symlink bar's config file to that of foo
+    * intercept copy foo bar - copy foo's configuration onto that of bar
     * intercept reset foo - reset foo's configuration (delete it and create a new one)
     ''')
 
@@ -165,6 +169,15 @@ def run():
                 os.unlink(target)
             os.system('ln -s %s %s' % (source, target))
             print('Linked %s to read from %s''s config' % (sys.argv[3], app_name))
+        elif op_name == 'copy':
+            assert_intercepted(app_name)
+            assert_intercepted(sys.argv[3])
+            source = os.path.join('/etc/interceptor.d', app_name)
+            target = os.path.join('/etc/interceptor.d', sys.argv[3])
+            with silence_excs(IOError):
+                os.unlink(target)
+            shutil.copy(source, target)
+            print('Copied %s to from %s''s config' % (sys.argv[3], app_name))
         elif op_name == 'reset':
             assert_intercepted(app_name)
             os.unlink(os.path.join('/etc/interceptor.d', app_name))

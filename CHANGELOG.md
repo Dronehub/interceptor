@@ -12,3 +12,4 @@ This is only for new-version changes:
 * lower versions of interceptor will fail to execute scripts from newer one
 * stronger guarantees about argument order
 * will check source file if is an interceptor
+* added the `copy` command
