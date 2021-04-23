@@ -95,8 +95,8 @@ class Configuration:
 
 def assert_correct_version(version: str) -> None:
     if version == '':
-        print('You have used an older version of interceptor to intercept this command.\n'
-              'It is advised to undo the interception and reintercept the call to upgrade.')
+        # print('You have used an older version of interceptor to intercept this command.\n'
+        #       'It is advised to undo the interception and reintercept the call to upgrade.')
         return
     my_version = pkg_resources.require('interceptor')[0].version
     if int(version.split('.')[0]) > int(my_version.split('.')[0]):
