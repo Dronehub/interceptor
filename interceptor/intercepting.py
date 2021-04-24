@@ -24,7 +24,10 @@ if FORCE:
 def is_intercepted(path_name: str) -> bool:
     with silence_excs(UnicodeDecodeError), open(path_name, 'rb') as f_in:
         intercepted_real = f_in.read(512).decode('utf-8')
-        return INTERCEPTOR_WRAPPER_STRING in intercepted_real
+        a = INTERCEPTOR_WRAPPER_STRING in intercepted_real
+
+    if a:
+       return os.path.exists(path_name+INTERCEPTED)
     return False
 
 
