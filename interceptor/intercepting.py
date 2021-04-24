@@ -153,6 +153,7 @@ intercept %s --force
     try:
         cfg = load_config_for(tool_name, None)
         cfg_exists = True
+        print('Configuration for %s exists and is valid' % (tool_name, ))
     except ValueError as e:
         print('Configuration for %s is invalid JSON.\nDetails: %s' % (tool_name, e.args[0]))
     except KeyError:
