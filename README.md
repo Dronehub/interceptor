@@ -211,3 +211,7 @@ Note that this will unlink foo is it is already a symlink.
 
 Note that many of the aforementioned commands check first to see it foo is intercepted.
 You can pass --force to skip that check.
+
+If you mean to pass --force as an argument, and not as a switch, interceptor will treat only
+the first --force found as a switch and remove it from further command processing.
+Rethink your naming of commands in that case.
