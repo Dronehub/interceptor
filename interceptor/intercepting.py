@@ -116,7 +116,7 @@ def intercept_tool(tool_name: str):
 
     for path in filter_whereis(tool_name):
         if not is_intercepted(path):
-            intercept_path(path)
+            intercept_path(tool_name, path)
 
     try:
         load_config_for(tool_name, None)
