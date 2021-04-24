@@ -94,7 +94,7 @@ def intercept_path(tool_name: str, file_name: str) -> None:
 
 def intercept_tool(tool_name: str):
     for path in filter_whereis(tool_name):
-        if not is_intercepted(path):
+        if is_intercepted(path):
             print('%s already intercepted, skipping on that' % (path, ))
             if not FORCE:
                 abort()
@@ -103,6 +103,7 @@ def intercept_tool(tool_name: str):
 
     try:
         load_config_for(tool_name, None)
+        print('Config for %s already exists' % (tool_name, ))
     except KeyError:
         print('Config for %s not found, creating a fresh one' % (tool_name, ))
         Configuration(app_name=tool_name).save()
