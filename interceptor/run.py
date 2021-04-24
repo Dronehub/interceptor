@@ -77,16 +77,15 @@ def run():
         elif op_name in ('append', 'prepend', 'disable', 'replace', 'display', 'hide',
                          'notify', 'unnotify'):
             assert_intercepted(app_name)
-            arg = target_name
             cfg = load_config_for(app_name, None)
             if op_name == 'append':
-                cfg.args_to_append.append(arg)
+                cfg.arg_names_to_append.append(target_name)
             elif op_name == 'prepend':
-                cfg.args_to_prepend.append(arg)
+                cfg.arg_names_to_prepend.append(target_name)
             elif op_name == 'disable':
-                cfg.args_to_disable.append(arg)
+                cfg.arg_names_to_disable.append(target_name)
             elif op_name == 'replace':
-                cfg.args_to_replace.append([arg, sys.argv[4]])
+                cfg.arg_names_to_replace.append([target_name, sys.target_namev[4]])
             elif op_name == 'display':
                 cfg.display_before_start = True
             elif op_name == 'hide':
