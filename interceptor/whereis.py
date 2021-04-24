@@ -39,14 +39,17 @@ def whereis(app: str) -> tp.List[str]:
         return results
 
 
-def filter_whereis(app: str, abort_on_failure=True) -> tp.Optional[str]:
+def filter_whereis(app: str, abort_on_failure=True) -> tp.Iterator[str]:
     """
     Return a position of an executable. Verify that it's executable.
     """
+    found = False
     for path in whereis(app):
         if os.access(path, os.X_OK):
+            found = True
             yield path
-    else:
+
+    if not found:
         if not abort_on_failure:
             return
         else:
