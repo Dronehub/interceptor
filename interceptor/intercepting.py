@@ -31,11 +31,12 @@ def is_intercepted(path_name: str, print_messages=False) -> bool:
         if not b:
             if print_messages:
                 print('%s does not exist' % (path_name+INTERCEPTED, ))
-            return b
+            return False
+        return True
     else:
         if print_messages:
             print('%s does not contain interceptor code' % (path_name, ))
-    return False
+        return False
 
 
 def is_all_intercepted(name: str) -> bool:
