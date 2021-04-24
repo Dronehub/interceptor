@@ -212,11 +212,11 @@ def edit(app_name):
     assert_intercepted(app_name)
     editor = list(filter_whereis('nano', abort_on_failure=False))
     if not editor:
-        editor = list(filter_whereis('vi'))
+        editor = list(filter_whereis('vi', abort_on_failure=False))
         if not editor:
             print('Neither nano nor vi were found')
             abort()
-    os.execv(editor[0], [editor, os.path.join('/etc/interceptor.d', app_name)])
+    os.execv(editor[0], [editor[0], os.path.join('/etc/interceptor.d', app_name)])
 
 
 def reset(app_name):
