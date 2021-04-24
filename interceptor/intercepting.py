@@ -48,8 +48,15 @@ def assert_intercepted(name: str) -> None:
     abort()
 
 
-def is_partially_intercepted(name: str) -> bool:
-    interceptions = [is_intercepted(path) for path in filter_whereis(name)]
+def is_partially_intercepted(name: str, print_messages=False) -> bool:
+    interceptions = []
+    for path in filter_whereis(name):
+        if is_intercepted(path):
+            interceptions.append(True)
+        else:
+            if print_messages:
+                print('%s is not intercepted' % (path, ))
+            interceptions.append(False)
     return not all(interceptions) and any(interceptions)
 
 
@@ -142,13 +149,13 @@ def unintercept_tool(tool_name: str):
 
 def check(tool_name: str):
     total_interception = is_all_intercepted(tool_name)
-    partial_interception = is_partially_intercepted(tool_name)
+    partial_interception = is_partially_intercepted(tool_name, True)
     if not total_interception and not partial_interception:
         print('%s is not intercepted at all' % (tool_name, ))
         sys.exit(0)
 
     if partial_interception:
-        print('''%s is partially intercepted. To clean this up, call:'
+        print('''%s is partially intercepted. To clean this up, call:
 intercept %s --force
 ''' % (tool_name, tool_name))
 
