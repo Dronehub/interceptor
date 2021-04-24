@@ -9,4 +9,4 @@ This is only for new-version changes:
 * merged the role of `check` and `status` into a single `status` command
 * added the support for recognizing partial interceptions,
   where not all executables of given file were patched
-
+* fixed a bug wherein interceptor would try to intercept directories

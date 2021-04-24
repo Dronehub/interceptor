@@ -45,6 +45,8 @@ def filter_whereis(app: str, abort_on_failure=True) -> tp.Iterator[str]:
     """
     found = False
     for path in whereis(app):
+        if os.path.isdir(path):
+            continue
         if os.access(path, os.X_OK):
             found = True
             yield path
