@@ -61,7 +61,7 @@ class Configuration:
                 arguments[arguments.index(arg_to_replace)] = arg_to_replace_with
 
         if self.display_before_start:
-            print('%s %s' % (self.app_name, ' '.join(arguments)))
+            print('%s %s' % (sys.argv[0], ' '.join(arguments)))
 
         return [process, *arguments]
 

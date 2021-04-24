@@ -13,3 +13,5 @@ This is only for new-version changes:
 * stronger guarantees about argument order
 * will check source file if is an interceptor
 * added the `copy` command
+* display before start will include the command's actual name
+
