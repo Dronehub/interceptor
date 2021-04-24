@@ -144,13 +144,13 @@ def check(tool_name: str):
     total_interception = is_all_intercepted(tool_name)
     partial_interception = is_partially_intercepted(tool_name)
     if not total_interception and not partial_interception:
-        print('%s is not intercepted at all')
+        print('%s is not intercepted at all' % (tool_name, ))
         sys.exit(0)
 
     if partial_interception:
         print('''%s is partially intercepted. To clean this up, call:'
 intercept %s --force
-''')
+''' % (tool_name, tool_name))
 
     cfg_exists = False
     try:
