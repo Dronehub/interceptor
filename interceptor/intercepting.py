@@ -20,14 +20,21 @@ if FORCE:
     sys.argv.remove('--force')
 
 
-def is_intercepted(path_name: str) -> bool:
+def is_intercepted(path_name: str, print_messages=False) -> bool:
     a = False
     with silence_excs(UnicodeDecodeError), open(path_name, 'rb') as f_in:
         intercepted_real = f_in.read(512).decode('utf-8')
         a = INTERCEPTOR_WRAPPER_STRING in intercepted_real
 
     if a:
-        return os.path.exists(path_name + INTERCEPTED)
+        b = os.path.exists(path_name + INTERCEPTED)
+        if not b:
+            if print_messages:
+                print('%s does not exist' % (path_name+INTERCEPTED, ))
+            return b
+    else:
+        if print_messages:
+            print('%s does not contain interceptor code' % (path_name, ))
     return False
 
 
@@ -40,7 +47,7 @@ def is_all_intercepted(name: str) -> bool:
 
 def assert_intercepted(name: str) -> None:
     if FORCE:
-        print('Skipping a check to see if %s is intercepted due to --force')
+        print('Skipping a check to see if %s is intercepted due to --force' % (name, ))
         return
     if is_all_intercepted(name):
         return
@@ -58,7 +65,7 @@ intercept %s --force
 def is_partially_intercepted(name: str, print_messages=False) -> bool:
     interceptions = []
     for path in filter_whereis(name):
-        if is_intercepted(path):
+        if is_intercepted(path, print_messages=print_messages):
             if print_messages:
                 print('%s is currently intercepted' % (path,))
             interceptions.append(True)
