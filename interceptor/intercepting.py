@@ -22,12 +22,13 @@ if FORCE:
 
 
 def is_intercepted(path_name: str) -> bool:
+    a = False
     with silence_excs(UnicodeDecodeError), open(path_name, 'rb') as f_in:
         intercepted_real = f_in.read(512).decode('utf-8')
         a = INTERCEPTOR_WRAPPER_STRING in intercepted_real
 
     if a:
-       return os.path.exists(path_name+INTERCEPTED)
+        return os.path.exists(path_name+INTERCEPTED)
     return False
 
 
@@ -75,15 +76,15 @@ def abort():
 
 def unintercept_path(path_name: str) -> None:
     src_name = path_name + INTERCEPTED
-    os.unlink(src_name)
-    shutil.move(path_name, src_name)
+    shutil.move(src_name, path_name)
     print('Successfully unintercepted %s' % (path_name,))
 
 
 def intercept_path(tool_name: str, file_name: str) -> None:
     source_file = pkg_resources.resource_filename(__name__, 'templates/cmdline.py')
     target_intercepted = file_name + INTERCEPTED
-    shutil.copy(source_file, target_intercepted)
+    previous_chmod = os.stat(file_name).st_mode & 0o777
+    shutil.copy(file_name, target_intercepted)
     os.unlink(file_name)
     source_content = read_in_file(source_file, 'utf-8')
     source_content = source_content.format(EXECUTABLE=sys.executable,
@@ -91,7 +92,7 @@ def intercept_path(tool_name: str, file_name: str) -> None:
                                            LOCATION=target_intercepted,
                                            VERSION=pkg_resources.require('interceptor')[0].version)
     write_to_file(file_name, source_content, 'utf-8')
-    os.chmod(file_name, 0o555)
+    os.chmod(file_name, previous_chmod)
     print('Successfully intercepted %s' % (file_name,))
 
 
@@ -127,14 +128,12 @@ def intercept_tool(tool_name: str):
 
 def unintercept_tool(tool_name: str):
     if not can_be_unintercepted(tool_name):
-        print('%s cannot be unintercepted' % (tool_name, ))
         if not FORCE:
+            print('%s cannot be unintercepted. Use --force to proceed' % (tool_name, ))
             abort()
-        print('Proceeding nevertheless due to --force')
 
     for path in filter_whereis(tool_name):
         if is_intercepted(path):
-            print('Unintercepting %s' % (path, ))
             unintercept_path(path)
         else:
             print('Skipping on %s' % (path, ))

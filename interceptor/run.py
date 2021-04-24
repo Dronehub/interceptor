@@ -51,7 +51,6 @@ def run():
             target_name = sys.argv[3]
 
         if op_name == 'undo':
-            assert_intercepted(app_name)
             unintercept_tool(app_name)
         elif op_name == 'configure':
             assert_intercepted(app_name)
