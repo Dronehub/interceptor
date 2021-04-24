@@ -14,4 +14,4 @@ This is only for new-version changes:
 * will check source file if is an interceptor
 * added the `copy` command
 * display before start will include the command's actual name
-
+* added `check` command

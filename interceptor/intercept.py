@@ -87,7 +87,8 @@ def banner():
     * intercept link foo bar - symlink bar's config file to that of foo
     * intercept copy foo bar - copy foo's configuration onto that of bar
     * intercept reset foo - reset foo's configuration (delete it and create a new one)
-    ''')
+    * intercept check foo - validate foo's configuration and reformat it
+''')
 
 
 def run():
@@ -185,6 +186,11 @@ def run():
             cfg.app_name = app_name
             cfg.save()
             print('Configuration reset')
+        elif op_name == 'check':
+            assert_intercepted(app_name)
+            cfg = load_config_for(app_name, None)
+            cfg.save()
+            print('Configuration is valid')
         else:
             print('Unrecognized command %s' % (op_name,))
             banner()

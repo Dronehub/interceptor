@@ -194,3 +194,8 @@ intercept reset foo
 
 Note that this will unlink foo is it is already a symlink.
 
+If you seek only to validate foo's config, type:
+```bash
+intercept check foo
+```
+It will be additionally reformatted.
