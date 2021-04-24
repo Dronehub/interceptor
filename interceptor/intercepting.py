@@ -70,8 +70,6 @@ def is_partially_intercepted(name: str, print_messages=False) -> bool:
                 print('%s is currently intercepted' % (path,))
             interceptions.append(True)
         else:
-            if print_messages:
-                print('%s is not intercepted' % (path,))
             interceptions.append(False)
     return not all(interceptions) and any(interceptions)
 
