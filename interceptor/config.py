@@ -74,7 +74,7 @@ class Configuration:
         write_json_to_file(self.path, self.to_json(), sort_keys=True, indent=4)
 
     @classmethod
-    def from_json(cls, dct):
+    def from_json(cls, dct, app_name: str):
         prepend = dct.get('args_to_prepend')
         if prepend is None:
             prepend = dct.get('args_to_append_before')
@@ -93,7 +93,8 @@ class Configuration:
                              prepend,
                              dct.get('args_to_replace'),
                              dct.get('display_before_start', False),
-                             dct.get('notify_about_actions', False))
+                             dct.get('notify_about_actions', False),
+                             app_name=app_name)
 
 
 def assert_correct_version(version: str) -> None:
@@ -115,9 +116,9 @@ def load_config_for(name: str, version: tp.Optional[str] = '') -> Configuration:
         assert_correct_version(version)
 
     file_name = os.path.join('/etc/interceptor.d', name)
-    if not os.path.exists(file_name):
-        raise KeyError('Configuration for %s does not exist' % (name,))
+    if not os.path.isfile(file_name):
+        print('Configuration for %s does not exist or is not a file' % (name,))
+        sys.exit(1)
 
-    cfg = Configuration.from_json(read_json_from_file(file_name))
-    cfg.app_name = name
+    cfg = Configuration.from_json(read_json_from_file(file_name), app_name=name)
     return cfg
