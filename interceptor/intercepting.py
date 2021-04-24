@@ -114,6 +114,10 @@ def intercept_tool(tool_name: str):
         print('%s is completely intercepted.' % (tool_name, ))
         abort()
 
+    for path in filter_whereis(tool_name):
+        if not is_intercepted(path):
+            intercept_path(path)
+
     try:
         load_config_for(tool_name, None)
         print('Config for %s already exists' % (tool_name, ))
