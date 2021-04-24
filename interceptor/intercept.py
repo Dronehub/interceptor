@@ -11,7 +11,7 @@ from interceptor.config import load_config_for, Configuration
 from interceptor.whereis import filter_whereis
 
 INTERCEPTED = '-intercepted'
-INTEREPTOR_WRAPPER_STRING = 'from interceptor.config import load_config_for'
+INTERCEPTOR_WRAPPER_STRING = 'from interceptor.config import load_config_for'
 
 
 def intercept(tool_name: str) -> None:
@@ -24,16 +24,10 @@ def intercept(tool_name: str) -> None:
                     os.path.join('/etc/interceptor.d', tool_name))
     source = filter_whereis(sys.argv[1])
     target_intercepted = source + INTERCEPTED
-    if os.path.exists(target_intercepted):
-        print('Target already intercepted. Aborting.')
-        sys.exit(1)
     with silence_excs(UnicodeDecodeError), open(source, 'rb') as f_in:
-        shebang = f_in.read(2)
-        if shebang == b'#!':
-            data = f_in.read(512).decode('utf-8')
-            if INTERCEPTOR_WRAPPER_STRING in data:
-                print('Target is already interceptor\'s wrapper. Aborting.')
-                sys.exit(1)
+        if is_intercepted(tool_name):
+            print('Target is already intercepted. Aborting.')
+            sys.exit(1)
     shutil.copy(source, target_intercepted)
     os.unlink(source)
     source_content = read_in_file(source_file, 'utf-8')
@@ -51,7 +45,7 @@ def is_intercepted(app_name: str) -> bool:
 
     with silence_excs(UnicodeDecodeError), open(path, 'rb') as f_in:
         intercepted_real = f_in.read(512).decode('utf-8')
-        return INTEREPTOR_WRAPPER_STRING in intercepted_real
+        return INTERCEPTOR_WRAPPER_STRING in intercepted_real
 
 
 def unintercept(app_name: str) -> None:
@@ -63,7 +57,7 @@ def unintercept(app_name: str) -> None:
     print('Leaving the configuration in place')
 
 
-def assert_intercepted(app_name: str):
+def assert_intercepted(app_name: str) -> None:
     if not is_intercepted(app_name):
         print('%s is not intercepted' % (app_name,))
         sys.exit(1)
@@ -101,6 +95,8 @@ def run():
     elif len(sys.argv) >= 3:
         op_name = sys.argv[1]
         app_name = sys.argv[2]
+        if len(sys.argv) >= 4:
+            target_name = sys.argv[3]
 
         if op_name == 'undo':
             assert_intercepted(app_name)
@@ -139,15 +135,16 @@ def run():
         elif op_name in ('append', 'prepend', 'disable', 'replace', 'display', 'hide',
                          'notify', 'unnotify'):
             assert_intercepted(app_name)
+            arg = target_name
             cfg = load_config_for(app_name, None)
             if op_name == 'append':
-                cfg.args_to_append.append(sys.argv[3])
+                cfg.args_to_append.append(arg)
             elif op_name == 'prepend':
-                cfg.args_to_prepend.append(sys.argv[3])
+                cfg.args_to_prepend.append(arg)
             elif op_name == 'disable':
-                cfg.args_to_disable.append(sys.argv[3])
+                cfg.args_to_disable.append(arg)
             elif op_name == 'replace':
-                cfg.args_to_replace.append([sys.argv[3], sys.argv[4]])
+                cfg.args_to_replace.append([arg, sys.argv[4]])
             elif op_name == 'display':
                 cfg.display_before_start = True
             elif op_name == 'hide':
@@ -160,28 +157,32 @@ def run():
             print('Configuration changed')
         elif op_name == 'link':
             assert_intercepted(app_name)
-            assert_intercepted(sys.argv[3])
+            assert_intercepted(target_name)
             source = os.path.join('/etc/interceptor.d', app_name)
-            target = os.path.join('/etc/interceptor.d', sys.argv[3])
+            target = os.path.join('/etc/interceptor.d', target_name)
             if os.path.islink(source) and '--force' not in sys.argv[4:]:
                 print('Refusing to link, since %s is already a symlink!' % (app_name, ))
                 sys.exit(1)
             with silence_excs(IOError):
                 os.unlink(target)
             os.system('ln -s %s %s' % (source, target))
-            print('Linked %s to read from %s''s config' % (sys.argv[3], app_name))
+            print('Linked %s to read from %s''s config' % (target_name, app_name))
         elif op_name == 'copy':
             assert_intercepted(app_name)
-            assert_intercepted(sys.argv[3])
+            assert_intercepted(target_name)
             source = os.path.join('/etc/interceptor.d', app_name)
-            target = os.path.join('/etc/interceptor.d', sys.argv[3])
+            target = os.path.join('/etc/interceptor.d', target_name)
             with silence_excs(IOError):
                 os.unlink(target)
             shutil.copy(source, target)
-            print('Copied %s to from %s''s config' % (sys.argv[3], app_name))
+            print('Copied %s to from %s''s config' % (target_name, app_name))
         elif op_name == 'reset':
             assert_intercepted(app_name)
-            os.unlink(os.path.join('/etc/interceptor.d', app_name))
+            path = os.path.join('/etc/interceptor.d', app_name)
+            if os.path.islink(path):
+                target = os.readlink(path).split('/')[-1]
+                print('%s config was a symlink to %s' % (app_name, target))
+            os.unlink()
             cfg = Configuration()
             cfg.app_name = app_name
             cfg.save()

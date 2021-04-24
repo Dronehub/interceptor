@@ -2,16 +2,9 @@ Changelog is normally kept [here](https://github.com/Cervi-Robotics/interceptor/
 
 This is only for new-version changes:
 
-# v1.2
+# v1.3
 
-* added `notify` and `unnotify` command
-* added the `notify_about_actions` configuration
-* added the `link` and `reset` command
-* added display the banner on invalid invocation
-* `status` will display symlinking of configs
-* lower versions of interceptor will fail to execute scripts from newer one
-* stronger guarantees about argument order
-* will check source file if is an interceptor
-* added the `copy` command
-* display before start will include the command's actual name
-* added `check` command
+* `reset` will tell you if the configuration was a symlink
+
+
+

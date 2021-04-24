@@ -191,7 +191,7 @@ To reset configuration of foo, type
 ```bash
 intercept reset foo
 ```
-
+This will tell you if foo's configuration was a symlink.
 Note that this will unlink foo is it is already a symlink.
 
 If you seek only to validate foo's config, type:
