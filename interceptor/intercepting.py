@@ -49,19 +49,15 @@ def is_partially_intercepted(name: str) -> bool:
     return not all(interceptions) and any(interceptions)
 
 
-def assert_can_be_unintercepted(name: str, do_not_throw=False) -> bool:
+def can_be_unintercepted(name: str) -> bool:
     for path in filter_whereis(name):
         if not is_intercepted(path):
             print('%s is not intercepted' % (path, ))
-            if do_not_throw and not FORCE:
-                return False
-            abort()
+            return False
         target_path = path + INTERCEPTED
         if not os.path.exists(target_path):
             print('%s does not exist' % (path, ))
-            if do_not_throw and not FORCE:
-                return False
-            abort()
+            return False
     return True
 
 
@@ -113,14 +109,18 @@ def intercept_tool(tool_name: str):
 
 
 def unintercept_tool(tool_name: str):
-    if assert_can_be_unintercepted(tool_name, True):
-        print()
+    if not can_be_unintercepted(tool_name):
+        print('%s cannot be unintercepted' % (tool_name, ))
         if not FORCE:
             abort()
+        else:
+            print('Proceeding nevertheless due to --force')
 
     for path in filter_whereis(tool_name):
         if is_intercepted(path):
             unintercept_path(path)
+        else:
+            print('Skipping on %s' % (path, ))
     print('Unintercepted %s, leaving the configuration in-place' % (tool_name, ))
 
 

@@ -12,7 +12,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'intercept = interceptor.intercept:run'
+            'intercept = interceptor.run:run'
         ]
     },
 )
