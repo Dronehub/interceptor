@@ -1,19 +1,15 @@
 import json
 import os
-import shutil
 import sys
 
-from satella.coding import silence_excs
 from satella.files import write_to_file, read_in_file
 
-from interceptor.config import load_config_for, Configuration
 from interceptor.intercepting import intercept_tool, unintercept_tool, assert_intercepted, check, \
-    abort
-from interceptor.whereis import filter_whereis
+    abort, link, assert_etc_interceptor_d_exists, edit, reset, configure
 
 
 def banner():
-    print('''Unrecognized command. Usage:
+    print('''Usage:
     * intercept foo - intercept foo
     * intercept undo foo - cancel intercepting foo
     * intercept configure foo - type in the configuration for foo in JSON format, end with Ctrl+D
@@ -39,17 +35,14 @@ that would lead to overwriting of the original executable, so interceptor won't 
 
 
 def run():
-    if not os.path.exists('/etc/interceptor.d'):
-        print('/etc/interceptor.d does not exist, creating...')
-        os.mkdir('/etc/interceptor.d')
+    assert_etc_interceptor_d_exists()
 
     if len(sys.argv) == 2:
         intercept_tool(sys.argv[1])
     elif len(sys.argv) >= 3:
         op_name = sys.argv[1]
         app_name = sys.argv[2]
-        if len(sys.argv) >= 4:
-            target_name = sys.argv[3]
+        target_name = sys.argv[3] if len(sys.argv) >= 4 else None
 
         if op_name == 'undo':
             unintercept_tool(app_name)
@@ -70,66 +63,16 @@ def run():
         elif op_name == 'status':
             check(app_name)
         elif op_name == 'edit':
-            assert_intercepted(app_name)
-            editor = list(filter_whereis('nano', abort_on_failure=False))
-            if not editor:
-                editor = list(filter_whereis('vi'))
-                if not editor:
-                    print('Neither nano nor vi were found')
-                    abort()
-            os.execv(editor[0], [editor, os.path.join('/etc/interceptor.d', app_name)])
+            edit(app_name)
         elif op_name in ('append', 'prepend', 'disable', 'replace', 'display', 'hide',
                          'notify', 'unnotify'):
-            assert_intercepted(app_name)
-            cfg = load_config_for(app_name, None)
-            if op_name == 'append':
-                cfg.arg_names_to_append.append(target_name)
-            elif op_name == 'prepend':
-                cfg.arg_names_to_prepend.append(target_name)
-            elif op_name == 'disable':
-                cfg.arg_names_to_disable.append(target_name)
-            elif op_name == 'replace':
-                cfg.arg_names_to_replace.append([target_name, sys.target_namev[4]])
-            elif op_name == 'display':
-                cfg.display_before_start = True
-            elif op_name == 'hide':
-                cfg.display_before_start = False
-            elif op_name == 'notify':
-                cfg.notify_about_actions = True
-            elif op_name == 'unnotify':
-                cfg.notify_about_actions = False
-            cfg.save()
-            print('Configuration changed')
+            configure(op_name, app_name, target_name)
         elif op_name == 'link':
-            assert_intercepted(app_name)
-            assert_intercepted(target_name)
-            source = os.path.join('/etc/interceptor.d', app_name)
-            target = os.path.join('/etc/interceptor.d', target_name)
-            if os.path.islink(source) and '--force' not in sys.argv[4:]:
-                print('Refusing to link, since %s is already a symlink!' % (app_name,))
-                sys.exit(1)
-            with silence_excs(IOError):
-                os.unlink(target)
-            os.symlink(source, target)
-            print('Linked %s to read from %s''s config' % (target_name, app_name))
+            link(app_name, target_name)
         elif op_name == 'copy':
-            assert_intercepted(app_name)
-            assert_intercepted(target_name)
-            source = os.path.join('/etc/interceptor.d', app_name)
-            target = os.path.join('/etc/interceptor.d', target_name)
-            with silence_excs(IOError):
-                os.unlink(target)
-            shutil.copy(source, target)
-            print('Copied %s to from %s''s config' % (target_name, app_name))
+            link(app_name, target_name, copy=True)
         elif op_name == 'reset':
-            assert_intercepted(app_name)
-            path = os.path.join('/etc/interceptor.d', app_name)
-            if os.path.islink(path):
-                target = os.readlink(path).split('/')[-1]
-                print('%s config was a symlink to %s' % (app_name, target))
-            os.unlink()
-            Configuration(app_name=app_name).save()
-            print('Configuration reset')
+            reset(app_name)
         else:
             print('Unrecognized command %s' % (op_name,))
             banner()

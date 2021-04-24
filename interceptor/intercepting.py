@@ -180,3 +180,74 @@ intercept %s --force
             target = os.readlink(cfg.path).split('/')[-1]
             print('%s config is a symlink to %s config' % (tool_name, target))
         cfg.save()
+
+
+def link(app_name, target_name, copy=False):
+    assert_intercepted(app_name)
+    assert_intercepted(target_name)
+    source = os.path.join('/etc/interceptor.d', app_name)
+    target = os.path.join('/etc/interceptor.d', target_name)
+    if os.path.islink(source) and not FORCE and not copy:
+        print('Refusing to link, since %s is already a symlink!' % (app_name,))
+        abort()
+    with silence_excs(IOError):
+        os.unlink(target)
+    if copy:
+        shutil.copy(source, target)
+    else:
+        os.symlink(source, target)
+    if not copy:
+        print('Linked %s to read from %s\'s config' % (target_name, app_name))
+    else:
+        print('Copied %s to read from %s\'s config' % (target_name, app_name))
+
+
+def assert_etc_interceptor_d_exists():
+    if not os.path.exists('/etc/interceptor.d'):
+        print('/etc/interceptor.d does not exist, creating...')
+        os.mkdir('/etc/interceptor.d')
+
+
+def edit(app_name):
+    assert_intercepted(app_name)
+    editor = list(filter_whereis('nano', abort_on_failure=False))
+    if not editor:
+        editor = list(filter_whereis('vi'))
+        if not editor:
+            print('Neither nano nor vi were found')
+            abort()
+    os.execv(editor[0], [editor, os.path.join('/etc/interceptor.d', app_name)])
+
+
+def reset(app_name):
+    assert_intercepted(app_name)
+    path = os.path.join('/etc/interceptor.d', app_name)
+    if os.path.islink(path):
+        target = os.readlink(path).split('/')[-1]
+        print('%s config was previously a symlink to %s' % (app_name, target))
+    os.unlink(path)
+    Configuration(app_name=app_name).save()
+    print('Configuration for %s reset' % (app_name, ))
+
+
+def configure(op_name, app_name, target_name):
+    assert_intercepted(app_name)
+    cfg = load_config_for(app_name, None)
+    if op_name == 'append':
+        cfg.arg_names_to_append.append(target_name)
+    elif op_name == 'prepend':
+        cfg.arg_names_to_prepend.append(target_name)
+    elif op_name == 'disable':
+        cfg.arg_names_to_disable.append(target_name)
+    elif op_name == 'replace':
+        cfg.arg_names_to_replace.append([target_name, sys.target_namev[4]])
+    elif op_name == 'display':
+        cfg.display_before_start = True
+    elif op_name == 'hide':
+        cfg.display_before_start = False
+    elif op_name == 'notify':
+        cfg.notify_about_actions = True
+    elif op_name == 'unnotify':
+        cfg.notify_about_actions = False
+    cfg.save()
+    print('Configuration changed')
