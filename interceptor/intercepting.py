@@ -49,6 +49,10 @@ def is_partially_intercepted(name: str) -> bool:
     return not all(interceptions) and any(interceptions)
 
 
+def is_completely_unintercepted(name: str) -> bool:
+    return not is_all_intercepted(name) and not is_partially_intercepted(name)
+
+
 def can_be_unintercepted(name: str) -> bool:
     for path in filter_whereis(name):
         if not is_intercepted(path):
@@ -89,6 +93,16 @@ def intercept_path(tool_name: str, file_name: str) -> None:
 
 
 def intercept_tool(tool_name: str):
+
+    if is_partially_intercepted(tool_name):
+        if not FORCE:
+            print('%s is partially intercepted. Use --force if you want to continue.')
+            abort()
+
+    if is_all_intercepted(tool_name):
+        print('%s is completely intercepted.')
+        abort()
+
     for path in filter_whereis(tool_name):
         if is_intercepted(path):
             print('%s already intercepted, skipping on that' % (path, ))
@@ -109,19 +123,15 @@ def intercept_tool(tool_name: str):
 
 
 def unintercept_tool(tool_name: str):
-    print('starting uninterception')
     if not can_be_unintercepted(tool_name):
         print('%s cannot be unintercepted' % (tool_name, ))
         if not FORCE:
             abort()
-        else:
-            print('Proceeding nevertheless due to --force')
-    else:
-        print('%s can be unintercepted' % (tool_name, ))
+        print('Proceeding nevertheless due to --force')
 
     for path in filter_whereis(tool_name):
         if is_intercepted(path):
-            print('unintercepting %s' % (path, ))
+            print('Unintercepting %s' % (path, ))
             unintercept_path(path)
         else:
             print('Skipping on %s' % (path, ))
