@@ -107,20 +107,12 @@ def intercept_tool(tool_name: str):
 
     if is_partially_intercepted(tool_name):
         if not FORCE:
-            print('%s is partially intercepted. Use --force if you want to continue.')
+            print('%s is partially intercepted. Use --force if you want to continue.' % (tool_name, ))
             abort()
 
     if is_all_intercepted(tool_name):
-        print('%s is completely intercepted.')
+        print('%s is completely intercepted.' % (tool_name, ))
         abort()
-
-    for path in filter_whereis(tool_name):
-        if is_intercepted(path):
-            print('%s already intercepted, skipping on that' % (path, ))
-            if not FORCE:
-                abort()
-            continue
-        intercept_path(tool_name, path)
 
     try:
         load_config_for(tool_name, None)
