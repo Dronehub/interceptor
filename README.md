@@ -115,9 +115,11 @@ To rectify this issue just type
 intercept foo --force
 ```
 
-If the command you're trying to intercept is a valid intercept argument, just call:
+Any call of intercept with a single argument (and optional switch) will be treated as order to 
+intercept this command, so if you're trying to intercept, say `show` you just type:
+
 ```bash
-intercept intercept foo
+intercept show
 ```
 
 To provide configuration for `foo` type

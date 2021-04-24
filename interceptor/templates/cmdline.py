@@ -1,11 +1,13 @@
 #!{EXECUTABLE}
+
 # Generated automatically by interceptor, a tool to intercept calls
 # to the commands and to alter their arguments.
 
 # To learn more visit https://github.com/Cervi-Robotics/interceptor
-from interceptor.config import load_config_for
+
 import os
 import sys
+from interceptor.config import load_config_for
 
 TOOLNAME = '{TOOLNAME}'
 LOCATION = '{LOCATION}'

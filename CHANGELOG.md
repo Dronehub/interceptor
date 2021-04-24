@@ -10,5 +10,4 @@ This is only for new-version changes:
 * added the support for recognizing partial interceptions,
   where not all executables of given file were patched
 * fixed a bug wherein interceptor would try to intercept directories
-* added command `intercept`
 * can skip intercept check with `--force`

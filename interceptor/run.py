@@ -8,14 +8,13 @@ from satella.files import write_to_file, read_in_file
 
 from interceptor.config import load_config_for, Configuration
 from interceptor.intercepting import intercept_tool, unintercept_tool, assert_intercepted, check, \
-    abort, FORCE
+    abort
 from interceptor.whereis import filter_whereis
 
 
 def banner():
     print('''Unrecognized command. Usage:
     * intercept foo - intercept foo
-    * intercept intercept - intercept foo, if foo's name is a command name for intercept
     * intercept undo foo - cancel intercepting foo
     * intercept configure foo - type in the configuration for foo in JSON format, end with Ctrl+D
     * intercept show foo - show the configuration for foo
@@ -52,8 +51,6 @@ def run():
         if len(sys.argv) >= 4:
             target_name = sys.argv[3]
 
-        if op_name == 'intercept':
-            intercept_tool(app_name)
         if op_name == 'undo':
             unintercept_tool(app_name)
         elif op_name == 'configure':
@@ -109,7 +106,7 @@ def run():
             source = os.path.join('/etc/interceptor.d', app_name)
             target = os.path.join('/etc/interceptor.d', target_name)
             if os.path.islink(source) and '--force' not in sys.argv[4:]:
-                print('Refusing to link, since %s is already a symlink!' % (app_name, ))
+                print('Refusing to link, since %s is already a symlink!' % (app_name,))
                 sys.exit(1)
             with silence_excs(IOError):
                 os.unlink(target)

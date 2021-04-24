@@ -12,7 +12,6 @@ from satella.files import read_in_file, write_to_file
 from interceptor.config import load_config_for, Configuration
 from interceptor.whereis import filter_whereis
 
-
 INTERCEPTED = '-intercepted'
 INTERCEPTOR_WRAPPER_STRING = 'from interceptor.config import load_config_for'
 
@@ -28,7 +27,7 @@ def is_intercepted(path_name: str) -> bool:
         a = INTERCEPTOR_WRAPPER_STRING in intercepted_real
 
     if a:
-        return os.path.exists(path_name+INTERCEPTED)
+        return os.path.exists(path_name + INTERCEPTED)
     return False
 
 
@@ -52,7 +51,7 @@ def assert_intercepted(name: str) -> None:
 intercept %s --force
 ''' % (name, name, name))
         return
-    print('%s is not intercepted' % (name, ))
+    print('%s is not intercepted' % (name,))
     abort()
 
 
@@ -61,11 +60,11 @@ def is_partially_intercepted(name: str, print_messages=False) -> bool:
     for path in filter_whereis(name):
         if is_intercepted(path):
             if print_messages:
-                print('%s is currently intercepted' % (path, ))
+                print('%s is currently intercepted' % (path,))
             interceptions.append(True)
         else:
             if print_messages:
-                print('%s is not intercepted' % (path, ))
+                print('%s is not intercepted' % (path,))
             interceptions.append(False)
     return not all(interceptions) and any(interceptions)
 
@@ -77,11 +76,11 @@ def is_completely_unintercepted(name: str) -> bool:
 def can_be_unintercepted(name: str) -> bool:
     for path in filter_whereis(name):
         if not is_intercepted(path):
-            print('%s is not intercepted' % (path, ))
+            print('%s is not intercepted' % (path,))
             return False
         target_path = path + INTERCEPTED
         if not os.path.exists(target_path):
-            print('%s does not exist' % (path, ))
+            print('%s does not exist' % (path,))
             return False
     return True
 
@@ -114,14 +113,14 @@ def intercept_path(tool_name: str, file_name: str) -> None:
 
 
 def intercept_tool(tool_name: str):
-
     if is_partially_intercepted(tool_name):
         if not FORCE:
-            print('%s is partially intercepted. Use --force if you want to continue.' % (tool_name, ))
+            print(
+                '%s is partially intercepted. Use --force if you want to continue.' % (tool_name,))
             abort()
 
     if is_all_intercepted(tool_name):
-        print('%s is completely intercepted.' % (tool_name, ))
+        print('%s is completely intercepted.' % (tool_name,))
         abort()
 
     for path in filter_whereis(tool_name):
@@ -130,9 +129,9 @@ def intercept_tool(tool_name: str):
 
     try:
         load_config_for(tool_name, None)
-        print('Config for %s already exists' % (tool_name, ))
+        print('Config for %s already exists' % (tool_name,))
     except KeyError:
-        print('Config for %s not found, creating a fresh one' % (tool_name, ))
+        print('Config for %s not found, creating a fresh one' % (tool_name,))
         Configuration(app_name=tool_name).save()
     except ValueError:
         print('Config for %s exists, but is invalid. Usage of %s will be impossible until '
@@ -142,22 +141,22 @@ def intercept_tool(tool_name: str):
 def unintercept_tool(tool_name: str):
     if not can_be_unintercepted(tool_name):
         if not FORCE:
-            print('%s cannot be unintercepted. Use --force to proceed' % (tool_name, ))
+            print('%s cannot be unintercepted. Use --force to proceed' % (tool_name,))
             abort()
 
     for path in filter_whereis(tool_name):
         if is_intercepted(path):
             unintercept_path(path)
         else:
-            print('Skipping on %s' % (path, ))
-    print('Unintercepted %s, leaving the configuration in-place' % (tool_name, ))
+            print('Skipping on %s' % (path,))
+    print('Unintercepted %s, leaving the configuration in-place' % (tool_name,))
 
 
 def check(tool_name: str):
     total_interception = is_all_intercepted(tool_name)
     partial_interception = is_partially_intercepted(tool_name, True)
     if not total_interception and not partial_interception:
-        print('%s is not intercepted at all' % (tool_name, ))
+        print('%s is not intercepted at all' % (tool_name,))
         sys.exit(0)
 
     if partial_interception:
@@ -169,11 +168,11 @@ intercept %s --force
     try:
         cfg = load_config_for(tool_name, None)
         cfg_exists = True
-        print('Configuration for %s exists and is valid' % (tool_name, ))
+        print('Configuration for %s exists and is valid' % (tool_name,))
     except ValueError as e:
         print('Configuration for %s is invalid JSON.\nDetails: %s' % (tool_name, e.args[0]))
     except KeyError:
-        print('%s configuration not found, creating a new one' % (tool_name, ))
+        print('%s configuration not found, creating a new one' % (tool_name,))
         cfg = Configuration(app_name=tool_name)
         cfg_exists = True
     if cfg_exists:
