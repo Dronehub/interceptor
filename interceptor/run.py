@@ -8,7 +8,7 @@ from satella.files import write_to_file, read_in_file
 
 from interceptor.config import load_config_for, Configuration
 from interceptor.intercepting import intercept_tool, unintercept_tool, assert_intercepted, check, \
-    abort
+    abort, FORCE
 from interceptor.whereis import filter_whereis
 
 

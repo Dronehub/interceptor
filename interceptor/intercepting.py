@@ -40,9 +40,17 @@ def is_all_intercepted(name: str) -> bool:
 
 
 def assert_intercepted(name: str) -> None:
+    if FORCE:
+        print('Skipping a check to see if %s is intercepted due to --force')
+        return
     if is_all_intercepted(name):
         return
     if is_partially_intercepted(name):
+        print('''%s is partially intercepted. This means that there exist binaries of %s
+'that have not been intercepted. To fix that, call:
+
+intercept %s --force
+''' % (name, name, name))
         return
     print('%s is not intercepted' % (name, ))
     abort()

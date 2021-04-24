@@ -11,3 +11,4 @@ This is only for new-version changes:
   where not all executables of given file were patched
 * fixed a bug wherein interceptor would try to intercept directories
 * added command `intercept`
+* can skip intercept check with `--foo`

@@ -208,3 +208,6 @@ intercept reset foo
 ```
 This will tell you if foo's configuration was a symlink.
 Note that this will unlink foo is it is already a symlink.
+
+Note that many of the aforementioned commands check first to see it foo is intercepted.
+You can pass --force to skip that check.
