@@ -25,6 +25,7 @@ def is_intercepted(path_name: str) -> bool:
     with silence_excs(UnicodeDecodeError), open(path_name, 'rb') as f_in:
         intercepted_real = f_in.read(512).decode('utf-8')
         return INTERCEPTOR_WRAPPER_STRING in intercepted_real
+    return False
 
 
 def is_all_intercepted(name: str) -> bool:
@@ -64,18 +65,6 @@ def assert_can_be_unintercepted(name: str, do_not_throw=False) -> bool:
     return True
 
 
-def assert_can_be_intercepted(name: str, do_not_throw=False) -> bool:
-    for path in filter_whereis(name):
-        f_path = path + INTERCEPTED
-        if os.path.exists(f_path):
-            print('%s already exists')
-            if do_not_throw and not FORCE:
-                return False
-
-            abort()
-    return True
-
-
 def abort():
     print('Aborting.')
     sys.exit(1)
@@ -104,21 +93,18 @@ def intercept_path(tool_name: str, file_name: str) -> None:
 
 
 def intercept_tool(tool_name: str):
-    if not assert_can_be_intercepted(tool_name, True):
-        print('%s cannot be intercepted.')
-        if not FORCE:
-            abort()
-
     for path in filter_whereis(tool_name):
         if not is_intercepted(path):
             print('%s already intercepted, skipping on that' % (path, ))
+            if not FORCE:
+                abort()
             continue
         intercept_path(tool_name, path)
 
     try:
         load_config_for(tool_name, None)
     except KeyError:
-        print('Config for %s not found, creating a fresh one')
+        print('Config for %s not found, creating a fresh one' % (tool_name, ))
         Configuration(app_name=tool_name).save()
     except ValueError:
         print('Config for %s exists, but is invalid. Usage of %s will be impossible until '
