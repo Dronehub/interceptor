@@ -10,19 +10,24 @@ from satella.json import read_json_from_file, write_json_to_file
 
 
 class Configuration:
+    @property
+    def path(self) -> str:
+        return os.path.join('/etc/interceptor.d', self.app_name)
+
     def __init__(self, args_to_disable: tp.Optional[tp.List[str]] = None,
                  args_to_append: tp.Optional[tp.List[str]] = None,
                  args_to_prepend: tp.Optional[tp.List[str]] = None,
                  args_to_replace: tp.Optional[tp.List[tp.Tuple[str, str]]] = None,
                  display_before_start: bool = False,
-                 notify_about_actions: bool = False):
+                 notify_about_actions: bool = False,
+                 app_name: tp.Optional[str] = None):
         self.args_to_disable = args_to_disable or []
         self.args_to_append = args_to_append or []
         self.args_to_prepend = args_to_prepend or []
         self.args_to_replace = args_to_replace or []
         self.display_before_start = display_before_start
         self.notify_about_actions = notify_about_actions
-        self.app_name = None
+        self.app_name = app_name
 
     def to_json(self):
         return {'args_to_disable': self.args_to_disable,
@@ -66,9 +71,7 @@ class Configuration:
         return [process, *arguments]
 
     def save(self):
-        write_json_to_file(os.path.join('/etc/interceptor.d', self.app_name), self.to_json(),
-                           sort_keys=True,
-                           indent=4)
+        write_json_to_file(self.path, self.to_json(), sort_keys=True, indent=4)
 
     @classmethod
     def from_json(cls, dct):

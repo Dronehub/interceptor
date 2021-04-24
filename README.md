@@ -79,6 +79,8 @@ Say, to intercept the command `foo` invoke:
 intercept foo
 ```
 
+Note that foo's executable must be discoverable by whereis. There should be
+ideally a single executable file, otherwise interceptor will patch all of them.
 Interceptor should display the following:
 
 ```
@@ -103,6 +105,14 @@ To check whether `foo` is being intercepted type:
 
 ```bash
 intercept status foo
+```
+
+This will additionally validate and reformat it's configuration file.
+This will return information about whether it's config is a symlink, or whether the tool
+is partially patched (ie. there are executables reachable within PATH that haven't been patched).
+To rectify this issue just type
+```bash
+intercept foo --force
 ```
 
 To provide configuration for `foo` type
@@ -145,7 +155,7 @@ To add an argument to be prepended to the command type:
 intercept prepend foo arg
 ```
 
-To add an argument to be elliminated if foo is called with it
+To add an argument to be eliminated if foo is called with it
 type:
 
 ```bash
@@ -193,9 +203,3 @@ intercept reset foo
 ```
 This will tell you if foo's configuration was a symlink.
 Note that this will unlink foo is it is already a symlink.
-
-If you seek only to validate foo's config, type:
-```bash
-intercept check foo
-```
-It will be additionally reformatted.

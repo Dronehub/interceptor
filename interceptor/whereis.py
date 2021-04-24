@@ -4,7 +4,6 @@ import os
 from satella.exceptions import ProcessFailed
 from satella.processes import call_and_return_stdout
 import sys
-from subprocess import CalledProcessError
 import typing as tp
 
 logger = logging.getLogger(__name__)
