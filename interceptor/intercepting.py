@@ -52,6 +52,8 @@ def is_partially_intercepted(name: str, print_messages=False) -> bool:
     interceptions = []
     for path in filter_whereis(name):
         if is_intercepted(path):
+            if print_messages:
+                print('%s is currently intercepted' % (path, ))
             interceptions.append(True)
         else:
             if print_messages:
