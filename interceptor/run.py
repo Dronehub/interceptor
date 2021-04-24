@@ -7,13 +7,15 @@ from satella.coding import silence_excs
 from satella.files import write_to_file, read_in_file
 
 from interceptor.config import load_config_for, Configuration
-from interceptor.intercepting import intercept_tool, unintercept_tool, assert_intercepted, check
+from interceptor.intercepting import intercept_tool, unintercept_tool, assert_intercepted, check, \
+    abort
 from interceptor.whereis import filter_whereis
 
 
 def banner():
     print('''Unrecognized command. Usage:
     * intercept foo - intercept foo
+    * intercept intercept - intercept foo, if foo's name is a command name for intercept
     * intercept undo foo - cancel intercepting foo
     * intercept configure foo - type in the configuration for foo in JSON format, end with Ctrl+D
     * intercept show foo - show the configuration for foo
@@ -50,6 +52,8 @@ def run():
         if len(sys.argv) >= 4:
             target_name = sys.argv[3]
 
+        if op_name == 'intercept':
+            intercept_tool(app_name)
         if op_name == 'undo':
             unintercept_tool(app_name)
         elif op_name == 'configure':
@@ -59,7 +63,7 @@ def run():
                 json.loads(data)
             except json.JSONDecoder:
                 print('Configuration is invalid JSON')
-                sys.exit(1)
+                abort()
             write_to_file(os.path.join('/etc/interceptor.d', app_name), data, 'utf-8')
             print('Configuration successfully written')
         elif op_name == 'show':
@@ -70,10 +74,13 @@ def run():
             check(app_name)
         elif op_name == 'edit':
             assert_intercepted(app_name)
-            editor = filter_whereis('nano', abort_on_failure=False)
-            if editor is None:
-                editor = filter_whereis('vi')
-            os.execv(editor, [editor, os.path.join('/etc/interceptor.d', app_name)])
+            editor = list(filter_whereis('nano', abort_on_failure=False))
+            if not editor:
+                editor = list(filter_whereis('vi'))
+                if not editor:
+                    print('Neither nano nor vi were found')
+                    abort()
+            os.execv(editor[0], [editor, os.path.join('/etc/interceptor.d', app_name)])
         elif op_name in ('append', 'prepend', 'disable', 'replace', 'display', 'hide',
                          'notify', 'unnotify'):
             assert_intercepted(app_name)
@@ -106,7 +113,7 @@ def run():
                 sys.exit(1)
             with silence_excs(IOError):
                 os.unlink(target)
-            os.system('ln -s %s %s' % (source, target))
+            os.symlink(source, target)
             print('Linked %s to read from %s''s config' % (target_name, app_name))
         elif op_name == 'copy':
             assert_intercepted(app_name)

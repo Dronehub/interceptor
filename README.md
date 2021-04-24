@@ -115,6 +115,11 @@ To rectify this issue just type
 intercept foo --force
 ```
 
+If the command you're trying to intercept is a valid intercept argument, just call:
+```bash
+intercept intercept foo
+```
+
 To provide configuration for `foo` type
 
 ```bash
