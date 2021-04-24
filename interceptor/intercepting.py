@@ -109,15 +109,19 @@ def intercept_tool(tool_name: str):
 
 
 def unintercept_tool(tool_name: str):
+    print('starting uninterception')
     if not can_be_unintercepted(tool_name):
         print('%s cannot be unintercepted' % (tool_name, ))
         if not FORCE:
             abort()
         else:
             print('Proceeding nevertheless due to --force')
+    else:
+        print('%s can be unintercepted' % (tool_name, ))
 
     for path in filter_whereis(tool_name):
         if is_intercepted(path):
+            print('unintercepting %s' % (path, ))
             unintercept_path(path)
         else:
             print('Skipping on %s' % (path, ))
