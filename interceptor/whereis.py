@@ -45,9 +45,10 @@ def filter_whereis(app: str, abort_on_failure=True) -> tp.Optional[str]:
     """
     for path in whereis(app):
         if os.access(path, os.X_OK):
-            return path
+            yield path
+
     if not abort_on_failure:
-        return None
+        return
     else:
         print('%s not found, aborting' % (app,))
         sys.exit(1)
