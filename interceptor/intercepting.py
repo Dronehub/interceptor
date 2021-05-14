@@ -28,10 +28,8 @@ def is_intercepted(path_name: str, print_messages=False) -> bool:
 
     if a:
         b = os.path.exists(path_name + INTERCEPTED)
-        if not b:
-            if print_messages:
-                print('%s does not exist' % (path_name+INTERCEPTED, ))
-            return False
+        if not b and print_messages:
+            print('%s is intercepted, but configuration entry does not exist' % (path_name, ))
         return True
     else:
         if print_messages:

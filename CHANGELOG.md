@@ -12,3 +12,4 @@ This is only for new-version changes:
 * fixed a bug wherein interceptor would try to intercept directories
 * can skip intercept check with `--force`
 * `status` will also check for existence of -intercepted files
+* fixed logic of determining whether an app is intercepted
