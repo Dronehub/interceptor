@@ -61,7 +61,7 @@ def run():
             config = read_in_file(os.path.join('/etc/interceptor.d', app_name), 'utf-8')
             print(config)
         elif op_name == 'status':
-            check(app_name)
+            check(app_name, add_config=False)
         elif op_name == 'edit':
             edit(app_name)
         elif op_name in ('append', 'prepend', 'disable', 'replace', 'display', 'hide',

@@ -25,11 +25,15 @@ def is_intercepted(path_name: str, print_messages=False) -> bool:
     with silence_excs(UnicodeDecodeError), open(path_name, 'rb') as f_in:
         intercepted_real = f_in.read(512).decode('utf-8')
         a = INTERCEPTOR_WRAPPER_STRING in intercepted_real
-
+    file_name = os.path.split(path_name)
     if a:
         b = os.path.exists(path_name + INTERCEPTED)
         if not b and print_messages:
-            print('%s is intercepted, but configuration entry does not exist' % (path_name, ))
+            print('%s is intercepted, but %s-intercepted does not exist' % (file_name, file_name))
+
+            if not os.path.exists(os.path.join('/etc/interceptor.d', file_name)):
+                print('Additionally, it\'s configuration is not present')
+
         return True
     else:
         if print_messages:
@@ -156,7 +160,7 @@ def unintercept_tool(tool_name: str):
     print('Unintercepted %s, leaving the configuration in-place' % (tool_name,))
 
 
-def check(tool_name: str):
+def check(tool_name: str, add_config: bool = False):
     total_interception = is_all_intercepted(tool_name)
     partial_interception = is_partially_intercepted(tool_name, True)
     if not total_interception and not partial_interception:
@@ -176,9 +180,10 @@ intercept %s --force
     except ValueError as e:
         print('Configuration for %s is invalid JSON.\nDetails: %s' % (tool_name, e.args[0]))
     except KeyError:
-        print('%s configuration not found, creating a new one' % (tool_name,))
-        cfg = Configuration(app_name=tool_name)
-        cfg_exists = True
+        if add_config:
+            print('%s configuration not found, creating a new one' % (tool_name,))
+            cfg = Configuration(app_name=tool_name)
+            cfg_exists = True
     if cfg_exists:
         if os.path.islink(cfg.path):
             target = os.readlink(cfg.path).split('/')[-1]
