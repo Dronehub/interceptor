@@ -49,6 +49,10 @@ with the following contents:
 If the intercepted command sees any arguments given in 
 `args_to_disable` they will be removed before being passed to target command.
 
+You give two-item lists in `args_to_replace`. If
+the first item occurs in arguments, it will be replaced by the second item. 
+
+
 If arguments in `args_to_append` are not in arguments, 
 they will be appended to the arguments.
 
@@ -58,9 +62,6 @@ If arguments in `args_to_prepend` are not in arguments,
 they will be prepended to arguments.
 
 The arguments in `args_to_prepend` will be appended in the order they are listed.
-
-You give two-item lists in `args_to_replace`. If
-the first item occurs in arguments, it will be replaced by the second item. 
 
 If you don't prepare the configuration file in advance, an empty file will be created for you.
      

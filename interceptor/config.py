@@ -49,6 +49,13 @@ class Configuration:
                     print('interceptor(%s): taking away %s' % (self.app_name, arg_to_take_away))
                 del arguments[arguments.index(arg_to_take_away)]
 
+        for arg_to_replace, arg_to_replace_with in self.args_to_replace:
+            if arg_to_replace in arguments:
+                if self.notify_about_actions:
+                    print('interceptor(%s): replacing %s with %s' % (self.app_name, arg_to_replace,
+                                                                     arg_to_replace_with))
+                arguments[arguments.index(arg_to_replace)] = arg_to_replace_with
+
         for arg_to_append in self.args_to_append:
             if arg_to_append not in arguments:
                 if self.notify_about_actions:
@@ -60,13 +67,6 @@ class Configuration:
                 if self.notify_about_actions:
                     print('interceptor(%s): prepending %s' % (self.app_name, arg_to_prepend))
                 arguments = [arg_to_prepend] + arguments
-
-        for arg_to_replace, arg_to_replace_with in self.args_to_replace:
-            if arg_to_replace in arguments:
-                if self.notify_about_actions:
-                    print('interceptor(%s): replacing %s with %s' % (self.app_name, arg_to_replace,
-                                                                     arg_to_replace_with))
-                arguments[arguments.index(arg_to_replace)] = arg_to_replace_with
 
         if self.deduplication:
             new_arguments = []

@@ -5,3 +5,4 @@ This is only for new-version changes:
 # v2.1
 
 * added an option to deduplicate arguments
+* changed the order of operation - substitution goes first
