@@ -4,4 +4,4 @@ This is only for new-version changes:
 
 # v2.1
 
-* _TBA_
+* added an option to deduplicate arguments

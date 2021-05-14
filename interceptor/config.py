@@ -20,7 +20,8 @@ class Configuration:
                  args_to_replace: tp.Optional[tp.List[tp.Tuple[str, str]]] = None,
                  display_before_start: bool = False,
                  notify_about_actions: bool = False,
-                 app_name: tp.Optional[str] = None):
+                 app_name: tp.Optional[str] = None,
+                 deduplication: bool = False):
         self.args_to_disable = args_to_disable or []
         self.args_to_append = args_to_append or []
         self.args_to_prepend = args_to_prepend or []
@@ -28,6 +29,7 @@ class Configuration:
         self.display_before_start = display_before_start
         self.notify_about_actions = notify_about_actions
         self.app_name = app_name
+        self.deduplication = deduplication
 
     def to_json(self):
         return {'args_to_disable': self.args_to_disable,
@@ -35,7 +37,8 @@ class Configuration:
                 'args_to_prepend': self.args_to_prepend,
                 'args_to_replace': self.args_to_replace,
                 'display_before_start': self.display_before_start,
-                'notify_about_actions': self.notify_about_actions}
+                'notify_about_actions': self.notify_about_actions,
+                'deduplication': self.deduplication}
 
     @for_argument(None, copy.copy)
     def modify(self, args, *extra_args):
@@ -64,6 +67,15 @@ class Configuration:
                     print('interceptor(%s): replacing %s with %s' % (self.app_name, arg_to_replace,
                                                                      arg_to_replace_with))
                 arguments[arguments.index(arg_to_replace)] = arg_to_replace_with
+
+        if self.deduplication:
+            new_arguments = []
+            added_args = {}
+            for arg in arguments:
+                if arg not in added_args:
+                    new_arguments.append(arg)
+                    added_args.add(arg)
+            arguments = new_arguments
 
         if self.display_before_start:
             print('%s %s' % (sys.argv[0], ' '.join(arguments)))
@@ -94,7 +106,8 @@ class Configuration:
                              dct.get('args_to_replace'),
                              dct.get('display_before_start', False),
                              dct.get('notify_about_actions', False),
-                             app_name=app_name)
+                             app_name=app_name,
+                             deduplication=dct.get('deduplication', False))
 
 
 def assert_correct_version(version: str) -> None:

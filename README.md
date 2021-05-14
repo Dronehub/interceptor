@@ -207,6 +207,12 @@ To circumvent that type:
 intercept link foo bar --force
 ```
 
+To toggle argument deduplication (only unique arguments will be passed) type:
+```bash
+intercept enable-deduplication foo  # enable it
+intercept disable-deduplication foo  # disable it
+```
+
 To reset configuration of foo, type
 ```bash
 intercept reset foo

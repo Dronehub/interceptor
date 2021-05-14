@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='cmd-interceptor',
-    version='2.1a1',
+    version='2.1b1',
     author='Piotr Maślanka',
     install_requires=['satella'],
     package_data={'interceptor': ['templates/cmdline.py',
