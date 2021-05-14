@@ -1,5 +1,8 @@
-# interceptor
+# cmd-interceptor
 [![Maintainability](https://api.codeclimate.com/v1/badges/8e423b83128c001fc6a2/maintainability)](https://codeclimate.com/github/Cervi-Robotics/interceptor/maintainability)
+[![PyPI](https://img.shields.io/pypi/pyversions/cmd-interceptor.svg)](https://pypi.python.org/pypi/cmd-interceptor)
+[![PyPI version](https://badge.fury.io/py/cmd-interceptor.svg)](https://badge.fury.io/py/cmd-interceptor)
+[![PyPI](https://img.shields.io/pypi/implementation/cmd-interceptor.svg)](https://pypi.python.org/pypi/cmd-interceptor)
 
 A tool to intercept calls to your command line tools and alter their args.
 
@@ -11,7 +14,7 @@ Since the `interceptor` PyPI package name is taken,
 you ought to install interceptor the following way:
 
 ```bash
-pip install git+https://github.com/Cervi-Robotics/interceptor.git
+pip install cmd-interceptor
 ```
 
 Or, if you don't have pip:
