@@ -44,13 +44,13 @@ class Configuration:
     def modify(self, args, *extra_args):
         process, *arguments = args
         for arg_to_take_away in self.args_to_disable:
-            if arg_to_take_away in arguments:
+            while arg_to_take_away in arguments:
                 if self.notify_about_actions:
                     print('interceptor(%s): taking away %s' % (self.app_name, arg_to_take_away))
                 del arguments[arguments.index(arg_to_take_away)]
 
         for arg_to_replace, arg_to_replace_with in self.args_to_replace:
-            if arg_to_replace in arguments:
+            while arg_to_replace in arguments:
                 if self.notify_about_actions:
                     print('interceptor(%s): replacing %s with %s' % (self.app_name, arg_to_replace,
                                                                      arg_to_replace_with))

@@ -6,3 +6,6 @@ This is only for new-version changes:
 
 * added an option to deduplicate arguments
 * changed the order of operation - substitution goes first
+* improved multiple instance removal:
+    * namely all instances of arguments to remove will be nuked
+
