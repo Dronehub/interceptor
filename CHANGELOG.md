@@ -1,4 +1,4 @@
-Changelog is normally kept [here](https://github.com/Cervi-Robotics/interceptor/releases).
+Changelog is normally kept [here](https://github.com/Dronehub/interceptor/releases).
 
 This is only for new-version changes:
 

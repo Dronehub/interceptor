@@ -3,7 +3,7 @@
 # Generated automatically by interceptor, a tool to intercept calls
 # to the commands and to alter their arguments.
 
-# To learn more visit https://github.com/Cervi-Robotics/interceptor
+# To learn more visit https://github.com/Dronehub/interceptor
 
 import os
 import sys
