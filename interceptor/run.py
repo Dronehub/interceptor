@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import shutil
 
 from satella.files import write_to_file, read_in_file
 
