@@ -21,7 +21,8 @@ class Configuration:
                  display_before_start: bool = False,
                  notify_about_actions: bool = False,
                  app_name: tp.Optional[str] = None,
-                 deduplication: bool = False):
+                 deduplication: bool = False,
+                 log: bool = False):
         self.args_to_disable = args_to_disable or []
         self.args_to_append = args_to_append or []
         self.args_to_prepend = args_to_prepend or []
@@ -30,6 +31,7 @@ class Configuration:
         self.notify_about_actions = notify_about_actions
         self.app_name = app_name
         self.deduplication = deduplication
+        self.log = log
 
     def to_json(self):
         return {'args_to_disable': self.args_to_disable,
@@ -38,7 +40,8 @@ class Configuration:
                 'args_to_replace': self.args_to_replace,
                 'display_before_start': self.display_before_start,
                 'notify_about_actions': self.notify_about_actions,
-                'deduplication': self.deduplication}
+                'deduplication': self.deduplication,
+                'log': self.log}
 
     @for_argument(None, copy.copy)
     def modify(self, args, *extra_args):
@@ -80,6 +83,12 @@ class Configuration:
         if self.display_before_start:
             print('%s %s' % (sys.argv[0], ' '.join(arguments)))
 
+        if self.log:
+            if not os.path.exists('/var/log/interceptor.d'):
+                os.mkdir('/var/log/interceptor.d')
+            with open(os.path.join('/var/log/interceptor.d', sys.argv[0], 'a')) as f_out:
+                f_out.write(' '.join(arguments))
+
         return [process, *arguments]
 
     def save(self):
@@ -107,7 +116,8 @@ class Configuration:
                              dct.get('display_before_start', False),
                              dct.get('notify_about_actions', False),
                              app_name=app_name,
-                             deduplication=dct.get('deduplication', False))
+                             deduplication=dct.get('deduplication', False),
+                             log=dct.get('log', False))
 
 
 def assert_correct_version(version: str) -> None:

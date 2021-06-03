@@ -214,6 +214,13 @@ intercept enable-deduplication foo  # enable it
 intercept disable-deduplication foo  # disable it
 ```
 
+To append all calls to this instruction into `/var/log/inteceptor.d/instruction_name`:
+```bash
+intercept log foo # enable it
+intercept unlog foo # disable it
+```
+
+
 To reset configuration of foo, type
 ```bash
 intercept reset foo
