@@ -27,7 +27,8 @@ def banner():
     * intercept link foo bar - symlink bar's config file to that of foo
     * intercept copy foo bar - copy foo's configuration onto that of bar
     * intercept reset foo - reset foo's configuration (delete it and create a new one)
-    
+    * intercept log foo - enable logging to /var/log/interceptor.d for foo
+    * intercept unlog foo - disable logging to /var/log/interceptor.d for foo
 Use the optional switch --force is you need a command to complete despite the command telling you 
 that it is impossible to complete. One trick: already intercepted files won't be intercepted, because
 that would lead to overwriting of the original executable, so interceptor won't do that.
@@ -65,7 +66,7 @@ def run():
         elif op_name == 'edit':
             edit(app_name)
         elif op_name in ('append', 'prepend', 'disable', 'replace', 'display', 'hide',
-                         'notify', 'unnotify'):
+                         'notify', 'unnotify', 'log', 'unlog'):
             configure(op_name, app_name, target_name)
         elif op_name == 'link':
             link(app_name, target_name)

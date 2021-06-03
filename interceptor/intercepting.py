@@ -258,5 +258,9 @@ def configure(op_name, app_name, target_name):
         cfg.notify_about_actions = True
     elif op_name == 'unnotify':
         cfg.notify_about_actions = False
+    elif op_name == 'log':
+        cfg.log = True
+    elif op_name == 'unlog':
+        cfg.log = False
     cfg.save()
     print('Configuration changed')
