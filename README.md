@@ -220,6 +220,13 @@ intercept log foo # enable it
 intercept unlog foo # disable it
 ```
 
+To backup a configuration of foo:
+```bash
+intercept backup foo
+intercept restore foo <save_number>
+```
+
+`intercept backup` will tell you the save number.
 
 To reset configuration of foo, type
 ```bash

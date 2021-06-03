@@ -26,6 +26,8 @@ def banner():
     * intercept unnotify foo - hide the notification each time an argument action is taken
     * intercept link foo bar - symlink bar's config file to that of foo
     * intercept copy foo bar - copy foo's configuration onto that of bar
+    * intercept backup foo - back up foo's config
+    * intercept restore foo <save_number> - restore foo's config from a given save
     * intercept reset foo - reset foo's configuration (delete it and create a new one)
     * intercept log foo - enable logging to /var/log/interceptor.d for foo
     * intercept unlog foo - disable logging to /var/log/interceptor.d for foo
@@ -74,6 +76,22 @@ def run():
             link(app_name, target_name, copy=True)
         elif op_name == 'reset':
             reset(app_name)
+        elif op_name == 'backup':
+            i = 1
+            while os.path.exists(os.path.join('/etc/interceptor.d/', f'{app_name}.{i}')):
+                i += 1
+            shutil.copy(os.path.join('/etc/interceptor.d', f'{app_name}'),
+                        os.path.join('/etc/interceptor.d', f'{app_name}.{i}'))
+            print(f'Backed up {app_name}\'s config as save number {i}')
+        elif op_name == 'restore':
+            i = int(target_name)
+            if not os.path.exists(os.path.join('/etc/interceptor.d', f'{app_name}.{i}')):
+                print(f'Save number {i} does not exist')
+                sys.exit(1)
+            os.unlink(os.path.join('/etc/interceptor.d', app_name))
+            shutil.copy(os.path.join('/etc/interceptor.d', f'{app_name}.{i}'),
+                        os.path.join('/etc/interceptor.d', app_name))
+            print(f'Restored configuration for {app_name} from save number {i}')
         else:
             print('Unrecognized command %s' % (op_name,))
             banner()
